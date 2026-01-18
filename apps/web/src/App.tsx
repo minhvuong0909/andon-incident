@@ -1,18 +1,17 @@
-import { useEffect, useState } from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Layout } from "./components/Layout";
+import { DashboardPage } from "./pages/DashboardPage";
+import { TechniciansPage } from "./pages/FixerPage";
 
 export default function App() {
-  const [data, setData] = useState<any>(null);
-
-  useEffect(() => {
-    fetch("/api/health")
-      .then((r) => r.json())
-      .then(setData);
-  }, []);
-
   return (
-    <div style={{ padding: 20 }}>
-      <h1>React Web</h1>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="technicians" element={<TechniciansPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
