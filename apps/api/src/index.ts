@@ -32,6 +32,8 @@ app.use("/users", userRoutes);
 app.use("/assignment", assignmentRoutes);
 
 app.use("/notifications", notificationRoute);
+
+initMQTT();
 testDB();
 
 const PORT = Number(process.env.PORT ?? 4000);

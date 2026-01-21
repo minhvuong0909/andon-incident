@@ -1,8 +1,9 @@
 import mqtt from "mqtt";
 import type { ButtonEvent, LedCommand } from "./types/iot";
 import { emitButtonEvent } from "./socket";
+import { updateBeltStatus } from "./services/andon.services";
 
-const MQTT_BROKER = process.env.MQTT_BROKER || "mqtt://broker.hivemq.com:1883";
+const MQTT_BROKER = process.env.MQTT_BROKER || "mqtt://test.mosquitto.org:1883";
 
 export const TOPIC_BUTTON_EVENT = "iot/esp8266/event";
 export const TOPIC_LED_CONTROL = "iot/esp8266/led";
@@ -14,18 +15,27 @@ export function initMQTT() {
 
   client.on("connect", () => {
     console.log("MQTT connected:", MQTT_BROKER);
-    client?.subscribe(TOPIC_BUTTON_EVENT);
+    // client?.subscribe(TOPIC_BUTTON_EVENT);
+    client?.subscribe(TOPIC_BUTTON_EVENT, (err) => {
+      if (err) console.log("Subscribe error:", err);
+      else console.log("Subscribed:", TOPIC_BUTTON_EVENT);
+    });
   });
 
-  client.on("message", (topic, message) => {
+  client.on("message", async (topic, message) => {
     if (topic !== TOPIC_BUTTON_EVENT) return;
 
     try {
+      const t0 = Date.now();
       const data: ButtonEvent = JSON.parse(message.toString());
       console.log("Button event:", data);
-
+      console.log("✅ nhận MQTT sau:", Date.now() - t0, "ms");
       // Realtime push sang web dashboard
       emitButtonEvent(data);
+      // nhấn nút
+      const t1 = Date.now();
+      await updateBeltStatus(data);
+      console.log("✅ update DB/API mất:", Date.now() - t1, "ms");
     } catch (err) {
       console.log("MQTT parse error:", err);
     }

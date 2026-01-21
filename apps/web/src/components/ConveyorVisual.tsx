@@ -1,60 +1,120 @@
-import { AlertCircle, AlertTriangle, CheckCircle2, Circle } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { AlertCircle, CheckCircle2, Circle } from "lucide-react";
 import { Card } from "./ui/card";
 
-interface ConveyorSegment {
-  id: string;
+type ConveyorStatus = "running" | "stopped";
+
+type ConveyorApi = {
+  id: number;
+  factory_id: number;
   name: string;
-  status: "normal" | "warning" | "error" | "idle";
+  status: ConveyorStatus;
+  created_at: string;
+};
+
+type ApiResponse = {
+  result: ConveyorApi[];
+};
+
+type ConveyorSegment = ConveyorApi & {
   position: { x: number; y: number };
+};
+
+// ✅ vị trí theo sơ đồ (đổi theo name thật của bạn)
+const conveyorPositions: Record<string, { x: number; y: number }> = {
+  "băng truyền 1": { x: 50, y: 50 },
+  "băng truyền 2": { x: 150, y: 50 },
+  "băng truyền 3": { x: 250, y: 50 },
+  "băng truyền 4": { x: 350, y: 50 },
+  "băng truyền 5": { x: 350, y: 150 },
+  "băng truyền 6": { x: 250, y: 150 },
+  "băng truyền 7": { x: 150, y: 150 },
+  "băng truyền 8": { x: 50, y: 150 },
+};
+
+function getStatusIcon(status: ConveyorStatus) {
+  if (status === "running")
+    return <CheckCircle2 className="size-5 text-green-600" />;
+  if (status === "stopped")
+    return <AlertCircle className="size-5 text-red-600" />;
+  return <Circle className="size-5 text-gray-400" />;
 }
 
-const conveyorSegments: ConveyorSegment[] = [
-  { id: "1", name: "BT01", status: "error", position: { x: 50, y: 50 } },
-  { id: "2", name: "BT02", status: "warning", position: { x: 150, y: 50 } },
-  { id: "3", name: "BT03", status: "normal", position: { x: 250, y: 50 } },
-  { id: "4", name: "BT04", status: "normal", position: { x: 350, y: 50 } },
-  { id: "5", name: "BT05", status: "warning", position: { x: 350, y: 150 } },
-  { id: "6", name: "BT06", status: "normal", position: { x: 250, y: 150 } },
-  { id: "7", name: "BT07", status: "idle", position: { x: 150, y: 150 } },
-  { id: "8", name: "BT08", status: "normal", position: { x: 50, y: 150 } },
-];
+function getStatusColor(status: ConveyorStatus) {
+  if (status === "running") return "border-green-500 bg-green-50";
+  if (status === "stopped") return "border-red-500 bg-red-50";
+  return "border-gray-300 bg-gray-50";
+}
 
 export function ConveyorVisual() {
-  const getStatusIcon = (status: ConveyorSegment["status"]) => {
-    switch (status) {
-      case "normal":
-        return <CheckCircle2 className="size-5 text-green-500" />;
-      case "warning":
-        return <AlertTriangle className="size-5 text-yellow-500" />;
-      case "error":
-        return <AlertCircle className="size-5 text-red-500" />;
-      case "idle":
-        return <Circle className="size-5 text-gray-400" />;
-    }
-  };
+  const [conveyors, setConveyors] = useState<ConveyorApi[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const getStatusColor = (status: ConveyorSegment["status"]) => {
-    switch (status) {
-      case "normal":
-        return "border-green-500 bg-green-50";
-      case "warning":
-        return "border-yellow-500 bg-yellow-50";
-      case "error":
-        return "border-red-500 bg-red-50";
-      case "idle":
-        return "border-gray-300 bg-gray-50";
+  // ✅ CALL API
+  useEffect(() => {
+    const fetchConveyors = async () => {
+      try {
+        const res = await fetch("http://localhost:4000/conveyor");
+        if (!res.ok) throw new Error("Fetch conveyors failed");
+
+        const json: ApiResponse = await res.json();
+        setConveyors(json.result || []);
+      } catch (err) {
+        console.error("API error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConveyors();
+  }, []);
+
+  const latestConveyors = useMemo(() => {
+    const map = new Map<string, ConveyorApi>();
+
+    for (const c of conveyors) {
+      const prev = map.get(c.name);
+
+      if (!prev) {
+        map.set(c.name, c);
+        continue;
+      }
+
+      if (
+        new Date(c.created_at).getTime() > new Date(prev.created_at).getTime()
+      ) {
+        map.set(c.name, c);
+      }
     }
-  };
+
+    return Array.from(map.values());
+  }, [conveyors]);
+
+  // merge với position
+  const segments: ConveyorSegment[] = useMemo(() => {
+    return latestConveyors.map((c) => ({
+      ...c,
+      position: conveyorPositions[c.name] || { x: 200, y: 100 }, // fallback
+    }));
+  }, [latestConveyors]);
 
   return (
-    <Card className="p-6">
-      <h3 className="font-semibold mb-4">Sơ đồ Băng Truyền</h3>
-      <div
-        className="relative bg-gray-100 rounded-lg p-8"
-        style={{ minHeight: "300px" }}
-      >
+    <Card className="p-6 rounded-2xl shadow-sm">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Sơ đồ Băng Truyền
+          </h3>
+          <p className="text-sm text-gray-500">Trạng thái mới nhất từ API</p>
+        </div>
+        <div className="text-xs text-gray-500">
+          {loading ? "Loading..." : "Realtime ✅"}
+        </div>
+      </div>
+
+      <div className="relative bg-gray-50 border rounded-2xl p-8 min-h-[320px] overflow-hidden">
+        {/* Đường băng truyền */}
         <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>
-          {/* Horizontal top line */}
           <line
             x1="50"
             y1="60"
@@ -62,10 +122,8 @@ export function ConveyorVisual() {
             y2="60"
             stroke="#94a3b8"
             strokeWidth="3"
-            strokeDasharray="5,5"
+            strokeDasharray="6,6"
           />
-
-          {/* Vertical right line */}
           <line
             x1="360"
             y1="60"
@@ -73,10 +131,8 @@ export function ConveyorVisual() {
             y2="160"
             stroke="#94a3b8"
             strokeWidth="3"
-            strokeDasharray="5,5"
+            strokeDasharray="6,6"
           />
-
-          {/* Horizontal bottom line */}
           <line
             x1="350"
             y1="160"
@@ -84,10 +140,8 @@ export function ConveyorVisual() {
             y2="160"
             stroke="#94a3b8"
             strokeWidth="3"
-            strokeDasharray="5,5"
+            strokeDasharray="6,6"
           />
-
-          {/* Vertical left line */}
           <line
             x1="40"
             y1="160"
@@ -95,61 +149,12 @@ export function ConveyorVisual() {
             y2="60"
             stroke="#94a3b8"
             strokeWidth="3"
-            strokeDasharray="5,5"
-          />
-
-          {/* Direction arrows */}
-          <defs>
-            <marker
-              id="arrowhead"
-              markerWidth="10"
-              markerHeight="10"
-              refX="5"
-              refY="3"
-              orient="auto"
-            >
-              <polygon points="0 0, 10 3, 0 6" fill="#64748b" />
-            </marker>
-          </defs>
-          <line
-            x1="200"
-            y1="50"
-            x2="220"
-            y2="50"
-            stroke="#64748b"
-            strokeWidth="2"
-            markerEnd="url(#arrowhead)"
-          />
-          <line
-            x1="370"
-            y1="110"
-            x2="370"
-            y2="130"
-            stroke="#64748b"
-            strokeWidth="2"
-            markerEnd="url(#arrowhead)"
-          />
-          <line
-            x1="200"
-            y1="170"
-            x2="180"
-            y2="170"
-            stroke="#64748b"
-            strokeWidth="2"
-            markerEnd="url(#arrowhead)"
-          />
-          <line
-            x1="30"
-            y1="110"
-            x2="30"
-            y2="90"
-            stroke="#64748b"
-            strokeWidth="2"
-            markerEnd="url(#arrowhead)"
+            strokeDasharray="6,6"
           />
         </svg>
 
-        {conveyorSegments.map((segment) => (
+        {/* Nodes */}
+        {segments.map((segment) => (
           <div
             key={segment.id}
             className="absolute"
@@ -161,44 +166,30 @@ export function ConveyorVisual() {
             }}
           >
             <div
-              className={`
-                flex items-center justify-center
-                border-2 rounded-lg
-                w-16 h-16
-                transition-all
-                ${getStatusColor(segment.status)}
-                ${segment.status === "error" || segment.status === "warning" ? "animate-pulse" : ""}
-              `}
+              className={[
+                "flex items-center justify-center",
+                "border-2 rounded-2xl w-16 h-16",
+                "bg-white shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5",
+                getStatusColor(segment.status),
+                segment.status === "stopped" ? "animate-pulse" : "",
+              ].join(" ")}
+              title={`${segment.name} • ${segment.status}`}
             >
               <div className="text-center">
                 {getStatusIcon(segment.status)}
-                <p className="text-xs font-medium mt-1">{segment.name}</p>
+                <p className="text-xs font-semibold mt-1 text-gray-700">
+                  {segment.name}
+                </p>
               </div>
             </div>
           </div>
         ))}
 
-        <div className="absolute bottom-4 right-4 bg-white rounded-lg p-3 shadow-sm z-10">
-          <p className="text-xs font-medium mb-2">Chú thích:</p>
-          <div className="space-y-1 text-xs">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="size-3 text-green-500" />
-              <span>Bình thường</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="size-3 text-yellow-500" />
-              <span>Cảnh báo</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <AlertCircle className="size-3 text-red-500" />
-              <span>Sự cố</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Circle className="size-3 text-gray-400" />
-              <span>Ngừng</span>
-            </div>
+        {!loading && segments.length === 0 && (
+          <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-500">
+            Không có dữ liệu từ API
           </div>
-        </div>
+        )}
       </div>
     </Card>
   );

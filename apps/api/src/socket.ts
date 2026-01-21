@@ -1,7 +1,7 @@
 import { Server } from "socket.io";
 import type { ButtonEvent } from "./types/iot";
 
-let io: Server | null = null;
+export let io: Server | null = null;
 
 export function initSocket(httpServer: any) {
   io = new Server(httpServer, { cors: { origin: "*" } });

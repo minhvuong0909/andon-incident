@@ -3,16 +3,17 @@ import { CreateConveyorReqBody } from "../models/Conveyor.requests";
 import { Request } from "express";
 import { ErrorWithStatus } from "../models/Errors";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { ButtonEvent } from "../types/iot";
 
 // update adon status
 export const updateConveyorStatus = async (
   status: string,
-  req: Request
+  req: Request,
 ): Promise<void> => {
   const conveyor_id = req.params.id;
   const [rows] = await db.execute<RowDataPacket[]>(
     "SELECT * FROM conveyor WHERE id = ?",
-    [conveyor_id]
+    [conveyor_id],
   );
 
   if (rows.length === 0) {
@@ -24,7 +25,7 @@ export const updateConveyorStatus = async (
 
   const [result] = await db.execute<ResultSetHeader>(
     "UPDATE conveyor SET status = ? WHERE id = ?",
-    [status, conveyor_id]
+    [status, conveyor_id],
   );
 
   if (result.affectedRows === 0) {
@@ -37,7 +38,7 @@ export const updateConveyorStatus = async (
 
 // create conveyor
 export const createConveyor = async (
-  req: CreateConveyorReqBody
+  req: CreateConveyorReqBody,
 ): Promise<void> => {
   // check có tồn tại trong factory
   const factory = await db.execute("SELECT * FROM factory WHERE id = ?", [
@@ -59,3 +60,39 @@ export const createConveyor = async (
     throw error;
   }
 };
+
+//
+const DEVICE_TO_BELT: Record<string, number> = {
+  esp8266_01: 1,
+};
+export async function updateBeltStatus(data: ButtonEvent) {
+  if (!data.pressed) return; // chỉ xử lý lúc nhấn xuống
+
+  const beltId = DEVICE_TO_BELT[data.deviceId];
+  if (!beltId) {
+    console.log("Device chưa được gắn băng truyền:", data.deviceId);
+    return;
+  }
+  console.log("vào đây chưa");
+
+  // ENTER => START, RESET => STOP
+  let nextStatus: "running" | "stopped" | null = null;
+
+  if (data.button === "ENTER") nextStatus = "stopped";
+  if (data.button === "RESET") nextStatus = "running";
+
+  if (!nextStatus) return;
+
+  try {
+    const res = await fetch(`http://localhost:4000/conveyor/status/1`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        status: nextStatus,
+      }),
+    });
+    console.log(`Belt ${beltId} -> ${nextStatus}`, res.status);
+  } catch (err) {
+    console.log("Call API lỗi:", err);
+  }
+}
