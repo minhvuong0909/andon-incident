@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   createAssignment,
   getAssignmentById,
+  getAssignmentsByToday,
   updateAssignment,
   updateManyAssignmentsByConveyorId,
 } from "../services/assignment.services";
@@ -72,5 +73,19 @@ export const updateManyAssignmentsByConveyorIdController = async (
       .json({ message: "Assignments updated successfully", result });
   } catch (error) {
     res.status(400).json({ message: "Error updating assignments", error });
+  }
+};
+
+export const getAssignmentsByTodayController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const result = await getAssignmentsByToday();
+    res.status(200).json({ assignments: result });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Error fetching today's assignments", error });
   }
 };

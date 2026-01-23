@@ -12,6 +12,7 @@ export interface AndonStationProps {
   lastUpdate?: string;
   issue?: string;
   onClick?: () => void;
+  lastUpdateISO?: string;
   onAssign?: () => void; // nếu có thì mới hiện nút phân công
 }
 

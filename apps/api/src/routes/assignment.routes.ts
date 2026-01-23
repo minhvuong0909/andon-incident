@@ -3,6 +3,7 @@ import {
   createAssignmentController,
   getAllAssignmentsController,
   getAssignmentByIdController,
+  getAssignmentsByTodayController,
   updateAssignmentController,
   updateManyAssignmentsByConveyorIdController,
 } from "../controllers/assignment.controllers";
@@ -26,4 +27,7 @@ assignmentRoutes.put(
   "/update-by-conveyor/:id",
   updateManyAssignmentsByConveyorIdController,
 );
+
+// get assignment by today
+assignmentRoutes.get("/today", getAssignmentsByTodayController);
 export default assignmentRoutes;
