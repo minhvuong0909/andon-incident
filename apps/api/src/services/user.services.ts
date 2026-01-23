@@ -2,7 +2,7 @@ import { Request } from "express";
 import { db } from "./db";
 import bcrypt from "bcrypt";
 import { ErrorWithStatus } from "../models/Errors";
-import { userInfo } from "node:os";
+import { createAssignment } from "./assignment.services";
 export const register = async (req: Request) => {
   const { username, password, role, department, name, factory_id } = req.body;
   const factory = await db.query("SELECT * FROM factory where id = ?", [
@@ -28,13 +28,19 @@ export const register = async (req: Request) => {
   if (!username || !password) {
     throw new Error("Username and password are required");
   }
+
   const saltRounds = 10;
 
   const hashedPassword = await bcrypt.hash(password, saltRounds);
   const query =
     "INSERT INTO user (factory_id, department, name,  username, password, role) VALUES (?, ?, ?, ?, ?, ?)";
   const values = [factory_id, department, name, username, hashedPassword, role];
-  await db.execute(query, values);
+  const [result] = await db.execute(query, values);
+  const userId = (result as any).insertId;
+
+  if (role.toLowerCase() === "fixer") {
+    await createAssignment(userId);
+  }
   return { message: "User registered successfully" };
 };
 

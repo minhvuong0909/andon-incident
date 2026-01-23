@@ -12,7 +12,7 @@ export interface AndonStationProps {
   lastUpdate?: string;
   issue?: string;
   onClick?: () => void;
-  onAssign?: () => void; // ✅ nếu có thì mới hiện nút phân công
+  onAssign?: () => void; // nếu có thì mới hiện nút phân công
 }
 
 export function AndonStation({

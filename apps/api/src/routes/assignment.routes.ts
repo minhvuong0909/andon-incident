@@ -4,6 +4,7 @@ import {
   getAllAssignmentsController,
   getAssignmentByIdController,
   updateAssignmentController,
+  updateManyAssignmentsByConveyorIdController,
 } from "../controllers/assignment.controllers";
 
 const assignmentRoutes = Router();
@@ -19,4 +20,10 @@ assignmentRoutes.get("/:id", getAssignmentByIdController);
 
 // get all assignments
 assignmentRoutes.get("/", getAllAssignmentsController);
+
+// update many assignments by conveyor id
+assignmentRoutes.put(
+  "/update-by-conveyor/:id",
+  updateManyAssignmentsByConveyorIdController,
+);
 export default assignmentRoutes;

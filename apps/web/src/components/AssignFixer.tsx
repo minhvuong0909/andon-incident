@@ -195,7 +195,7 @@ export function AssignTechnicianDialog({
           {activeFixers.length === 0 ? (
             <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-3">
               <p className="text-sm text-yellow-800">
-                Không có thợ Active để phân công.
+                Không có thợ hoạt động để phân công.
               </p>
             </div>
           ) : (

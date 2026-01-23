@@ -43,6 +43,17 @@ type Technician = {
   status: UserStatus;
 };
 
+// ✅ Assignment
+type AssignmentStatus = "Ready" | "Assigned" | "Busy" | "Done";
+
+type AssignmentApi = {
+  id: number;
+  user_id: number;
+  conveyor_id: number | null;
+  status: AssignmentStatus;
+  created_at?: string;
+};
+
 const dailyIncidentsData = [
   { time: "00:00", count: 2 },
   { time: "04:00", count: 1 },
@@ -52,9 +63,6 @@ const dailyIncidentsData = [
   { time: "20:00", count: 3 },
 ];
 
-// ======================
-// API FUNCTIONS
-// ======================
 const API_BASE = "http://localhost:4000";
 
 async function fetchConveyorsApi() {
@@ -70,12 +78,21 @@ async function fetchFixersApi() {
 
   const json: ApiResponse<Technician> = await res.json();
 
+  // ✅ chỉ lấy Fixer ACTIVE
   const fixers = (json.result || []).filter(
     (u) =>
       u.role?.toLowerCase() === "fixer" && u.status?.toLowerCase() === "active",
   );
 
   return fixers;
+}
+
+async function fetchAllAssignmentsApi() {
+  const res = await fetch(`${API_BASE}/assignment`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Fetch assignments failed");
+
+  const json: ApiResponse<AssignmentApi> = await res.json();
+  return json.result || [];
 }
 
 export function DashboardPage() {
@@ -91,6 +108,11 @@ export function DashboardPage() {
 
   const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [loadingTechs, setLoadingTechs] = useState(false);
+
+  // ✅ Map user_id -> assignment_id (Ready)
+  const [readyAssignmentMap, setReadyAssignmentMap] = useState<
+    Record<number, number>
+  >({});
 
   // ======================
   // REALTIME FETCH CONVEYORS (2s)
@@ -199,8 +221,8 @@ export function DashboardPage() {
   }, [normalStations, incidentStations.length]);
 
   // ======================
-  // OPEN ASSIGN DIALOG + LOAD FIXERS
-  // (chỉ dùng trong tab SỰ CỐ)
+  // OPEN ASSIGN DIALOG
+  // ✅ load fixer ACTIVE + assignment READY
   // ======================
   const handleAssignTechnician = async (stationId: string) => {
     const station = stations.find((s) => s.id === stationId);
@@ -211,11 +233,31 @@ export function DashboardPage() {
 
     setLoadingTechs(true);
     try {
-      const fixers = await fetchFixersApi();
-      setTechnicians(fixers);
+      const [fixers, assignments] = await Promise.all([
+        fetchFixersApi(),
+        fetchAllAssignmentsApi(),
+      ]);
+
+      // ✅ READY assignments
+      const readyAssignments = (assignments || []).filter(
+        (a) => String(a.status || "").toLowerCase() === "ready",
+      );
+
+      // ✅ Map user_id -> assignment_id
+      const map: Record<number, number> = {};
+      for (const a of readyAssignments) {
+        map[a.user_id] = a.id;
+      }
+      setReadyAssignmentMap(map);
+
+      // ✅ Chỉ show fixers: Active + có assignment Ready
+      const readyUserIds = new Set(readyAssignments.map((a) => a.user_id));
+      const availableFixers = fixers.filter((f) => readyUserIds.has(f.id));
+
+      setTechnicians(availableFixers);
     } catch (err) {
       console.error(err);
-      toast.error("Không tải được danh sách thợ sửa chữa");
+      toast.error("Không tải được danh sách thợ sẵn sàng");
     } finally {
       setLoadingTechs(false);
     }
@@ -223,22 +265,51 @@ export function DashboardPage() {
 
   // ======================
   // CONFIRM ASSIGNMENT
+  // update assignment READY -> ASSIGNED
   // ======================
   const handleAssignConfirm = async (technicianIds: string[]) => {
     if (!selectedStation) return;
 
+    // ✅ guard: map chưa có dữ liệu thì không cho assign
+    if (!readyAssignmentMap || Object.keys(readyAssignmentMap).length === 0) {
+      toast.error("Danh sách sẵn sàng chưa tải xong, thử lại!");
+      return;
+    }
+
     try {
       await Promise.all(
-        technicianIds.map((id) =>
-          fetch("http://localhost:4000/assignment/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user_id: Number(id),
-              conveyor_id: Number(selectedStation.id),
-            }),
-          }),
-        ),
+        technicianIds.map(async (userIdStr) => {
+          const userId = Number(userIdStr);
+
+          const assignmentId = readyAssignmentMap[userId];
+          if (!assignmentId) {
+            throw new Error(
+              `Fixer ID ${userId} không có assignment trạng thái READY`,
+            );
+          }
+
+          const payload = {
+            conveyor_id: Number(selectedStation.id),
+            status: "Assigned", // ✅ phải đúng enum backend (Assigned)
+          };
+
+          const res = await fetch(
+            `${API_BASE}/assignment/update/${assignmentId}`,
+            {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            },
+          );
+
+          if (!res.ok) {
+            const data = await res.json().catch(() => null);
+            console.error("Update assignment failed payload:", payload, data);
+            throw new Error(data?.message || "Update assignment failed");
+          }
+
+          return res.json().catch(() => ({}));
+        }),
       );
 
       toast.success("Đã phân công thành công!", {
@@ -247,9 +318,11 @@ export function DashboardPage() {
 
       setAssignDialogOpen(false);
       setSelectedStation(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error("Phân công thất bại");
+      toast.error("Phân công thất bại", {
+        description: err?.message || "Có lỗi xảy ra",
+      });
     }
   };
 
@@ -325,6 +398,7 @@ export function DashboardPage() {
           )}
         </TabsContent>
 
+        {/* TAB Sự cố */}
         <TabsContent value="incidents" className="mt-6">
           {incidentStations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

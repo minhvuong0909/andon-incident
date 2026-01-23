@@ -20,7 +20,7 @@ type ConveyorSegment = ConveyorApi & {
   position: { x: number; y: number };
 };
 
-// ✅ vị trí theo sơ đồ (đổi theo name thật của bạn)
+// vị trí theo sơ đồ (đổi theo name thật của bạn)
 const conveyorPositions: Record<string, { x: number; y: number }> = {
   "băng truyền 1": { x: 50, y: 50 },
   "băng truyền 2": { x: 150, y: 50 },
@@ -50,7 +50,6 @@ export function ConveyorVisual() {
   const [conveyors, setConveyors] = useState<ConveyorApi[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ CALL API
   useEffect(() => {
     const fetchConveyors = async () => {
       try {

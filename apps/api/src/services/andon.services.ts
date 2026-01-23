@@ -64,18 +64,17 @@ export const createConveyor = async (
 //
 const DEVICE_TO_BELT: Record<string, number> = {
   esp8266_01: 1,
+  esp32_02: 2,
 };
 export async function updateBeltStatus(data: ButtonEvent) {
-  if (!data.pressed) return; // chỉ xử lý lúc nhấn xuống
+  if (!data.pressed) return;
 
   const beltId = DEVICE_TO_BELT[data.deviceId];
   if (!beltId) {
     console.log("Device chưa được gắn băng truyền:", data.deviceId);
     return;
   }
-  console.log("vào đây chưa");
 
-  // ENTER => START, RESET => STOP
   let nextStatus: "running" | "stopped" | null = null;
 
   if (data.button === "ENTER") nextStatus = "stopped";
@@ -84,14 +83,30 @@ export async function updateBeltStatus(data: ButtonEvent) {
   if (!nextStatus) return;
 
   try {
-    const res = await fetch(`http://localhost:4000/conveyor/status/1`, {
+    // Update conveyor
+    const res = await fetch(`http://localhost:4000/conveyor/status/${beltId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status: nextStatus,
-      }),
+      body: JSON.stringify({ status: nextStatus }),
     });
+
     console.log(`Belt ${beltId} -> ${nextStatus}`, res.status);
+
+    // Nếu RESET => update assignment luôn
+    if (data.button === "RESET") {
+      const res2 = await fetch(
+        `http://localhost:4000/assignment/update-by-conveyor/${beltId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            status: "Done",
+          }),
+        },
+      );
+
+      console.log(`Assignment belt ${beltId} -> Done`, res2.status);
+    }
   } catch (err) {
     console.log("Call API lỗi:", err);
   }

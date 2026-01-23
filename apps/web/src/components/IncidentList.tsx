@@ -11,6 +11,7 @@ export interface Incident {
   name: string;
   status: ConveyorStatus;
   created_at: string;
+  updated_at: string;
 }
 
 type ApiResponse = {
@@ -21,7 +22,6 @@ export function IncidentList() {
   const [data, setData] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ call API
   useEffect(() => {
     const fetchIncidents = async () => {
       try {
