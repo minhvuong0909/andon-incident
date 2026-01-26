@@ -111,3 +111,11 @@ export async function updateBeltStatus(data: ButtonEvent) {
     console.log("Call API lỗi:", err);
   }
 }
+
+export async function getListConveyorsByFactory(factory_id: number) {
+  const [conveyors] = await db.execute<RowDataPacket[]>(
+    "SELECT * FROM conveyor WHERE factory_id = ?",
+    [factory_id],
+  );
+  return conveyors;
+}

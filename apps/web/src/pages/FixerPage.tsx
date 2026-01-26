@@ -6,6 +6,11 @@ import {
   Search,
   Users,
   ClipboardList,
+  UserPlus,
+  Activity,
+  Filter,
+  User,
+  MapPin,
 } from "lucide-react";
 
 import { Button } from "../components/ui/button";
@@ -69,9 +74,14 @@ function shallowEqualJson(a: any, b: any) {
 
 function SkeletonRow() {
   return (
-    <div className="rounded-2xl border bg-white shadow-sm p-4 animate-pulse space-y-3">
-      <div className="h-4 w-2/3 bg-gray-200 rounded" />
-      <div className="h-3 w-1/2 bg-gray-100 rounded" />
+    <div className="rounded-2xl border bg-gradient-to-r from-gray-50 to-white shadow-sm p-4 animate-pulse space-y-3">
+      <div className="flex items-center gap-3">
+        <div className="size-10 rounded-full bg-gray-200" />
+        <div className="flex-1 space-y-2">
+          <div className="h-4 w-2/3 bg-gray-200 rounded" />
+          <div className="h-3 w-1/2 bg-gray-100 rounded" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -87,15 +97,12 @@ export function TechniciansPage() {
     Record<number, string>
   >({});
 
-  // UI state
   const [search, setSearch] = useState("");
   const [factoryFilter, setFactoryFilter] = useState<string>("all");
 
-  // ✅ cache để tránh giật khi polling
   const prevUsersRef = useRef<User[]>([]);
   const prevAssignmentsRef = useRef<Assignment[]>([]);
 
-  // ✅ realtime polling (nhưng không setState nếu data giống nhau)
   useEffect(() => {
     let isMounted = true;
     let fetching = false;
@@ -120,7 +127,6 @@ export function TechniciansPage() {
         const nextUsers = userJson.result || [];
         const nextAssignments = assignmentJson.result || [];
 
-        // ✅ chỉ set state khi data thay đổi => đỡ giật UI
         if (isMounted) {
           if (!shallowEqualJson(prevUsersRef.current, nextUsers)) {
             prevUsersRef.current = nextUsers;
@@ -149,12 +155,10 @@ export function TechniciansPage() {
     };
   }, []);
 
-  // ✅ chỉ lấy Fixer Active
   const technicians = useMemo(() => {
     return users.filter((u) => u.role === "Fixer" && u.status === "Active");
   }, [users]);
 
-  // ✅ filter + search
   const filteredTechnicians = useMemo(() => {
     const q = search.trim().toLowerCase();
 
@@ -171,12 +175,10 @@ export function TechniciansPage() {
     });
   }, [technicians, search, factoryFilter]);
 
-  // ✅ chỉ lấy assignment đang Assigned
   const activeAssignments = useMemo(() => {
     return assignments.filter((a) => a.status === "Assigned");
   }, [assignments]);
 
-  // ✅ fetch conveyor name (có cache tránh gọi spam)
   const getConveyorById = async (id: number) => {
     const res = await fetch(`http://localhost:4000/conveyor/${id}`, {
       cache: "no-store",
@@ -204,7 +206,6 @@ export function TechniciansPage() {
 
           if (!cancelled) {
             setConveyorNameMap((prev) => {
-              // tránh re-render nếu đã có
               if (prev[id]) return prev;
               return { ...prev, [id]: name };
             });
@@ -219,129 +220,124 @@ export function TechniciansPage() {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeAssignments]);
+  }, [activeAssignments, conveyorNameMap]);
 
   const totalTechnicians = technicians.length;
   const totalActiveJobs = activeAssignments.length;
+  const availableTechs = totalTechnicians - totalActiveJobs;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-50">
-      <div className="mx-auto px-4 py-8 space-y-6">
-        {/* Header */}
-        <div className="rounded-3xl border bg-white shadow-sm p-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 tracking-tight">
-              Quản lý Thợ Sửa Chữa
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              Theo dõi thợ sửa chữa & công việc đang được phân công theo thời
-              gian thực
-            </p>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="rounded-2xl border bg-gradient-to-br from-indigo-50 via-white to-blue-50 shadow-lg p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="bg-gradient-to-br from-indigo-600 to-blue-600 rounded-2xl p-3 shadow-lg">
+              <Users className="size-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                Quản lý Thợ Sửa Chữa
+              </h1>
+              <p className="text-sm text-gray-600 mt-1 font-medium">
+                Theo dõi thợ sửa chữa & công việc theo thời gian thực
+              </p>
+            </div>
           </div>
-
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Thêm thợ sửa chữa</DialogTitle>
-                <DialogDescription>
-                  Nhập thông tin thợ sửa chữa mới vào hệ thống
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Họ và tên</Label>
-                  <Input id="name" placeholder="Nguyễn Văn A" />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="department">Phòng ban</Label>
-                  <Input id="department" placeholder="Bảo trì / Cơ điện..." />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="specialty">Xưởng</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn xưởng" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">Xưởng 1</SelectItem>
-                      <SelectItem value="2">Xưởng 2</SelectItem>
-                      <SelectItem value="3">Xưởng 3</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button className="w-full rounded-2xl">
-                  Thêm vào hệ thống
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
         </div>
+      </div>
 
-        {/* Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="p-6 rounded-3xl shadow-sm border bg-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Tổng thợ</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">
-                  {totalTechnicians}
-                </p>
-              </div>
-              <div className="size-12 rounded-2xl bg-blue-50 flex items-center justify-center border">
-                <Users className="size-6 text-blue-600" />
-              </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="p-6 rounded-2xl shadow-md border-2 bg-gradient-to-br from-blue-50 to-white hover:shadow-lg transition-all">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-gray-600 mb-1">
+                Tổng số thợ
+              </p>
+              <p className="text-3xl font-bold text-gray-900">
+                {totalTechnicians}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Đang hoạt động</p>
             </div>
-          </Card>
-
-          <Card className="p-6 rounded-3xl shadow-sm border bg-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Đang được phân công</p>
-                <p className="text-3xl font-bold text-yellow-600 mt-1">
-                  {totalActiveJobs}
-                </p>
-              </div>
-              <div className="size-12 rounded-2xl bg-yellow-50 flex items-center justify-center border">
-                <Wrench className="size-6 text-yellow-600" />
-              </div>
+            <div className="size-14 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
+              <Users className="size-7 text-white" />
             </div>
-          </Card>
+          </div>
+        </Card>
 
-          <Card className="p-6 rounded-3xl shadow-sm border bg-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500">Realtime</p>
-                <p className="text-3xl font-bold text-green-600 mt-1">ON</p>
-              </div>
-              <div className="size-12 rounded-2xl bg-green-50 flex items-center justify-center border">
-                <CheckCircle2 className="size-6 text-green-600" />
-              </div>
+        <Card className="p-6 rounded-2xl shadow-md border-2 bg-gradient-to-br from-yellow-50 to-white hover:shadow-lg transition-all">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-gray-600 mb-1">
+                Đang bận
+              </p>
+              <p className="text-3xl font-bold text-yellow-600">
+                {totalActiveJobs}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Công việc đang làm</p>
             </div>
-          </Card>
-        </div>
+            <div className="size-14 rounded-2xl bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center shadow-md">
+              <Wrench className="size-7 text-white" />
+            </div>
+          </div>
+        </Card>
 
-        {/* Filters (sticky để kéo xuống vẫn đẹp) */}
-        <div className="sticky top-3 z-30">
-          <div className="rounded-3xl border bg-white/80 backdrop-blur-xl shadow-sm p-4 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-            <div className="relative w-full md:max-w-sm">
-              <Search className="size-4 text-gray-400 absolute left-3 top-3" />
+        <Card className="p-6 rounded-2xl shadow-md border-2 bg-gradient-to-br from-green-50 to-white hover:shadow-lg transition-all">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-gray-600 mb-1">
+                Sẵn sàng
+              </p>
+              <p className="text-3xl font-bold text-green-600">
+                {availableTechs}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Có thể phân công</p>
+            </div>
+            <div className="size-14 rounded-2xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-md">
+              <CheckCircle2 className="size-7 text-white" />
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-6 rounded-2xl shadow-md border-2 bg-gradient-to-br from-purple-50 to-white hover:shadow-lg transition-all">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-gray-600 mb-1">
+                Trạng thái
+              </p>
+              <p className="text-3xl font-bold text-purple-600">LIVE</p>
+              <p className="text-xs text-gray-500 mt-1">Cập nhật realtime</p>
+            </div>
+            <div className="size-14 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-md">
+              <Activity className="size-7 text-white animate-pulse" />
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Filters Section - Sticky */}
+      <div className="sticky top-20 z-30">
+        <div className="rounded-2xl border-2 bg-white/95 backdrop-blur-xl shadow-lg p-4">
+          <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+            <div className="relative w-full md:max-w-md">
+              <Search className="size-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" />
               <Input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Tìm theo tên hoặc username..."
-                className="pl-9 rounded-2xl"
+                placeholder="Tìm kiếm theo tên hoặc username..."
+                className="pl-12 pr-4 py-3 rounded-xl border-2 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 font-medium"
               />
             </div>
 
-            <div className="w-full md:w-[220px]">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                <Filter className="size-4" />
+                <span className="hidden md:inline">Lọc:</span>
+              </div>
               <Select value={factoryFilter} onValueChange={setFactoryFilter}>
-                <SelectTrigger className="rounded-2xl">
-                  <SelectValue placeholder="Lọc theo xưởng" />
+                <SelectTrigger className="w-full md:w-[200px] rounded-xl border-2 font-medium">
+                  <SelectValue placeholder="Chọn xưởng" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tất cả xưởng</SelectItem>
@@ -353,139 +349,261 @@ export function TechniciansPage() {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Main layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Technicians */}
-          <div className="rounded-3xl border bg-white shadow-sm overflow-hidden">
-            <div className="p-5 border-b flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Users className="size-4 text-gray-600" />
-                <h3 className="text-base font-semibold text-gray-900">
-                  Danh sách người sửa
-                </h3>
+      {/* Main Content - Two Columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left: Technicians List */}
+        <div className="rounded-2xl border-2 bg-white shadow-lg overflow-hidden">
+          <div className="p-5 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl p-2 shadow-md">
+                  <Users className="size-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Danh sách thợ
+                  </h3>
+                  <p className="text-xs text-gray-600">
+                    {filteredTechnicians.length} thợ đang hoạt động
+                  </p>
+                </div>
               </div>
 
               {loading && (
-                <span className="text-xs text-gray-500">Đang tải...</span>
+                <Badge className="bg-blue-600 text-white animate-pulse">
+                  Đang tải...
+                </Badge>
               )}
-            </div>
-
-            <div className="p-4 space-y-3 max-h-[560px] overflow-auto">
-              {loading &&
-                Array.from({ length: 6 }).map((_, i) => (
-                  <SkeletonRow key={i} />
-                ))}
-
-              {!loading && filteredTechnicians.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
-                  Không có thợ nào phù hợp
-                </div>
-              )}
-
-              {!loading &&
-                filteredTechnicians.map((t) => (
-                  <div
-                    key={t.id}
-                    className="rounded-2xl border bg-white p-4 shadow-sm hover:shadow-md transition"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h4 className="font-semibold text-gray-900 truncate">
-                            {t.name}
-                          </h4>
-
-                          <Badge variant="secondary" className="rounded-xl">
-                            Thợ
-                          </Badge>
-
-                          <Badge className="bg-blue-600 text-white rounded-xl">
-                            Xưởng {t.factory_id}
-                          </Badge>
-                        </div>
-
-                        <p className="text-sm text-gray-600 mt-1">
-                          {t.department} • @{t.username}
-                        </p>
-                      </div>
-
-                      <Badge className="rounded-xl bg-green-600 text-white">
-                        Hoạt động
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
             </div>
           </div>
 
-          {/* Assignments */}
-          <div className="rounded-3xl border bg-white shadow-sm overflow-hidden">
-            <div className="p-5 border-b flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ClipboardList className="size-4 text-gray-600" />
-                <h3 className="text-base font-semibold text-gray-900">
-                  Công việc đang thực hiện
-                </h3>
+          <div className="p-4 space-y-3 max-h-[600px] overflow-auto">
+            {loading &&
+              Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />)}
+
+            {!loading && filteredTechnicians.length === 0 && (
+              <div className="text-center py-16 rounded-2xl bg-gray-50">
+                <User className="size-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-lg font-semibold text-gray-500">
+                  Không tìm thấy thợ nào
+                </p>
+                <p className="text-sm text-gray-400 mt-1">
+                  Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm
+                </p>
+              </div>
+            )}
+
+            {!loading &&
+              filteredTechnicians.map((t) => {
+                const isWorking = activeAssignments.some(
+                  (a) => a.user_id === t.id,
+                );
+
+                return (
+                  <div
+                    key={t.id}
+                    className="rounded-2xl border-2 bg-gradient-to-r from-white to-gray-50 p-4 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-start gap-3 flex-1 min-w-0">
+                        {/* Avatar */}
+                        <div className="size-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">
+                          {t.name
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                            .slice(0, 2)}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <h4 className="font-bold text-gray-900 truncate">
+                              {t.name}
+                            </h4>
+                            {isWorking && (
+                              <Badge className="bg-yellow-600 text-white text-[10px] px-2 py-0.5">
+                                ĐANG LÀM
+                              </Badge>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-2 text-xs text-gray-600 mb-2">
+                            <span className="font-medium">{t.department}</span>
+                            <span>•</span>
+                            <span>@{t.username}</span>
+                          </div>
+
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge
+                              variant="outline"
+                              className="text-xs font-semibold border-blue-200 text-blue-700 bg-blue-50"
+                            >
+                              <MapPin className="size-3 mr-1" />
+                              Xưởng {t.factory_id}
+                            </Badge>
+                            <Badge className="bg-green-600 text-white text-xs font-semibold">
+                              Active
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+
+        {/* Right: Active Assignments */}
+        <div className="rounded-2xl border-2 bg-white shadow-lg overflow-hidden">
+          <div className="p-5 border-b bg-gradient-to-r from-yellow-50 to-orange-50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-gradient-to-br from-yellow-600 to-orange-600 rounded-xl p-2 shadow-md">
+                  <ClipboardList className="size-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Công việc đang làm
+                  </h3>
+                  <p className="text-xs text-gray-600">
+                    {activeAssignments.length} nhiệm vụ đang thực hiện
+                  </p>
+                </div>
               </div>
             </div>
+          </div>
 
-            <div className="p-4 space-y-3 max-h-[560px] overflow-auto">
-              {loading &&
-                Array.from({ length: 6 }).map((_, i) => (
-                  <SkeletonRow key={i} />
-                ))}
+          <div className="p-4 space-y-3 max-h-[600px] overflow-auto">
+            {loading &&
+              Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />)}
 
-              {!loading && activeAssignments.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
-                  Không có công việc nào đang được phân công
-                </div>
-              )}
+            {!loading && activeAssignments.length === 0 && (
+              <div className="text-center py-16 rounded-2xl bg-gray-50">
+                <CheckCircle2 className="size-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-lg font-semibold text-gray-500">
+                  Không có công việc nào
+                </p>
+                <p className="text-sm text-gray-400 mt-1">
+                  Tất cả thợ đang rảnh và sẵn sàng nhận việc mới
+                </p>
+              </div>
+            )}
 
-              {!loading &&
-                activeAssignments.map((job) => {
-                  const tech = technicians.find((u) => u.id === job.user_id);
+            {!loading &&
+              activeAssignments.map((job) => {
+                const tech = technicians.find((u) => u.id === job.user_id);
 
-                  return (
-                    <div
-                      key={job.id}
-                      className="rounded-2xl border bg-white p-4 shadow-sm hover:shadow-md transition"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <h4 className="font-semibold text-gray-900 truncate">
+                return (
+                  <div
+                    key={job.id}
+                    className="rounded-2xl border-2 bg-gradient-to-r from-white to-yellow-50 p-4 shadow-sm hover:shadow-md hover:border-yellow-300 transition-all cursor-pointer"
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Wrench className="size-4 text-yellow-600 flex-shrink-0" />
+                            <h4 className="font-bold text-gray-900 truncate">
                               {conveyorNameMap[job.conveyor_id] ||
                                 `Conveyor #${job.conveyor_id}`}
                             </h4>
-
-                            <p className="text-sm text-gray-600 mt-1">
-                              Đang xử lý bởi:{" "}
-                              <span className="font-medium text-gray-800">
-                                {tech?.name || "Chưa rõ"}
-                              </span>
-                            </p>
                           </div>
 
-                          <Badge className="rounded-xl bg-yellow-600 text-white">
-                            Assigned
-                          </Badge>
+                          <div className="flex items-center gap-2 text-sm">
+                            <User className="size-4 text-gray-500" />
+                            <span className="text-gray-600">
+                              Thợ:{" "}
+                              <span className="font-semibold text-gray-900">
+                                {tech?.name || "Chưa rõ"}
+                              </span>
+                            </span>
+                          </div>
                         </div>
 
+                        <Badge className="bg-yellow-600 text-white font-semibold shadow-sm">
+                          Đang làm
+                        </Badge>
+                      </div>
+
+                      <div className="pt-2 border-t border-gray-100">
                         <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <Clock className="size-3" />
-                          <span>
-                            Gán lúc: {new Date(job.created_at).toLocaleString()}
+                          <Clock className="size-3.5" />
+                          <span className="font-medium">
+                            Bắt đầu:{" "}
+                            {new Date(job.created_at).toLocaleString("vi-VN")}
                           </span>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
-            </div>
+                  </div>
+                );
+              })}
           </div>
         </div>
       </div>
+
+      {/* Add Dialog */}
+      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+        <DialogContent className="rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">
+              Thêm thợ sửa chữa mới
+            </DialogTitle>
+            <DialogDescription>
+              Nhập đầy đủ thông tin để thêm thợ vào hệ thống
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 pt-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="font-semibold">
+                Họ và tên *
+              </Label>
+              <Input
+                id="name"
+                placeholder="Nguyễn Văn A"
+                className="rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="department" className="font-semibold">
+                Phòng ban *
+              </Label>
+              <Input
+                id="department"
+                placeholder="Bảo trì, Cơ điện..."
+                className="rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="factory" className="font-semibold">
+                Xưởng *
+              </Label>
+              <Select>
+                <SelectTrigger className="rounded-xl">
+                  <SelectValue placeholder="Chọn xưởng làm việc" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Xưởng 1</SelectItem>
+                  <SelectItem value="2">Xưởng 2</SelectItem>
+                  <SelectItem value="3">Xưởng 3</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 font-semibold shadow-md mt-6">
+              <UserPlus className="size-4 mr-2" />
+              Thêm vào hệ thống
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

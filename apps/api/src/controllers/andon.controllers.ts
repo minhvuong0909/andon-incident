@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
   createConveyor,
+  getListConveyorsByFactory,
   updateConveyorStatus,
 } from "../services/andon.services";
 import { CreateConveyorReqBody } from "../models/Conveyor.requests";
@@ -8,7 +9,7 @@ import { db } from "../services/db";
 
 export const updateConveyorStatusController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     await updateConveyorStatus(req.body.status, req);
@@ -20,7 +21,7 @@ export const updateConveyorStatusController = async (
 
 export const createConveyorController = async (
   req: Request<any, any, CreateConveyorReqBody>,
-  res: Response
+  res: Response,
 ) => {
   try {
     await createConveyor(req.body);
@@ -46,11 +47,24 @@ export const getConveyorController = async (req: Request, res: Response) => {
 
 export const getAllConveyorsController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const query = "SELECT * FROM conveyor";
     const [conveyors] = await db.execute(query);
+    res.status(200).json({ result: conveyors });
+  } catch (error) {
+    res.status(400).json({ message: "Error fetching conveyors", error });
+  }
+};
+
+export const getConveyorsByFactoryController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const factory_id = Number(req.params.factory_id);
+    const conveyors = await getListConveyorsByFactory(factory_id);
     res.status(200).json({ result: conveyors });
   } catch (error) {
     res.status(400).json({ message: "Error fetching conveyors", error });

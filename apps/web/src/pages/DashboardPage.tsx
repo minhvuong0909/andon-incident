@@ -9,6 +9,12 @@ import {
   LayoutGrid,
   Search,
   Table2,
+  Download,
+  Calendar,
+  TrendingUp,
+  Activity,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
 
 import {
@@ -58,7 +64,6 @@ type Technician = {
   status: UserStatus;
 };
 
-// Assignment
 type AssignmentStatus = "Ready" | "Assigned" | "Done";
 
 type AssignmentApi = {
@@ -80,12 +85,19 @@ const dailyIncidentsData = [
 
 const API_BASE = "http://localhost:4000";
 
-// ======================
-// API FUNCTIONS
-// ======================
 async function fetchConveyorsApi() {
   const res = await fetch(`${API_BASE}/conveyor`, { cache: "no-store" });
   if (!res.ok) throw new Error("Fetch conveyors failed");
+  const json: ApiResponse<ConveyorApi> = await res.json();
+  return json.result || [];
+}
+
+async function fetchConveyorsByFactoryApi(factoryId: number) {
+  const res = await fetch(`${API_BASE}/conveyor/factory/${factoryId}`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) throw new Error("Fetch conveyors by factory failed");
   const json: ApiResponse<ConveyorApi> = await res.json();
   return json.result || [];
 }
@@ -96,7 +108,6 @@ async function fetchFixersApi() {
 
   const json: ApiResponse<Technician> = await res.json();
 
-  // chỉ lấy Fixer ACTIVE
   const fixers = (json.result || []).filter(
     (u) =>
       String(u.role || "").toLowerCase() === "fixer" &&
@@ -114,9 +125,6 @@ async function fetchAllAssignmentsApi() {
   return json.result || [];
 }
 
-// ======================
-// Skeleton
-// ======================
 function SkeletonCard() {
   return (
     <div className="rounded-2xl border bg-white shadow-sm p-4 space-y-3 animate-pulse">
@@ -127,41 +135,39 @@ function SkeletonCard() {
   );
 }
 
-// ======================
-// Helpers: Date range filter
-// ======================
-
-const toDateOnly = (isoStr: string) => {
-  const d = new Date(isoStr);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toISOString().slice(0, 10); // YYYY-MM-DD
-};
-
-// ======================
-// Speech
-// ======================
 function speakVN(text: string) {
   if (!("speechSynthesis" in window)) return;
-
   window.speechSynthesis.cancel();
-
   const utter = new SpeechSynthesisUtterance(text);
   utter.lang = "vi-VN";
   utter.rate = 1;
   utter.pitch = 1;
-
   window.speechSynthesis.speak(utter);
 }
 
-// extend station props để có lastUpdateISO
 type StationWithISO = AndonStationProps & {
   lastUpdateISO?: string;
 };
 
-// ======================
-// Dashboard
-// ======================
 export function DashboardPage() {
+  const role = String(localStorage.getItem("userRole") || "").toLowerCase();
+  const factoryId = Number(localStorage.getItem("factoryId"));
+
+  const isStaff = role === "staff";
+
+  const allowedTabs = useMemo(() => {
+    if (isStaff) return ["stations"];
+    return ["stations", "incidents", "analytics", "statistics"];
+  }, [isStaff]);
+
+  const [tabValue, setTabValue] = useState<string>(allowedTabs[0]);
+
+  useEffect(() => {
+    if (!allowedTabs.includes(tabValue)) {
+      setTabValue(allowedTabs[0]);
+    }
+  }, [allowedTabs, tabValue]);
+
   const [conveyors, setConveyors] = useState<ConveyorApi[]>([]);
   const [loadingStations, setLoadingStations] = useState(true);
 
@@ -175,35 +181,24 @@ export function DashboardPage() {
   const [technicians, setTechnicians] = useState<Technician[]>([]);
   const [loadingTechs, setLoadingTechs] = useState(false);
 
-  // chỉ show fixer có READY assignment
   const [readyAssignmentMap, setReadyAssignmentMap] = useState<
     Record<number, number>
   >({});
 
-  // search băng truyền
   const [search, setSearch] = useState("");
-
-  // Stats table (search + pagination)
   const [statsSearch, setStatsSearch] = useState("");
   const [statsPage, setStatsPage] = useState(1);
   const pageSize = 10;
 
-  // Excel export range
   const [exportFrom, setExportFrom] = useState("");
   const [exportTo, setExportTo] = useState("");
   const [exportTodayOnly, setExportTodayOnly] = useState(true);
 
-  // AI voice alert 2 lần
   const [alertCountMap, setAlertCountMap] = useState<Record<string, number>>(
     {},
   );
-
-  // expand ngày để xem full conveyor
   const [expandedDate, setExpandedDate] = useState<string | null>(null);
 
-  // ======================
-  // REALTIME FETCH CONVEYORS (2s)
-  // ======================
   useEffect(() => {
     let isMounted = true;
     let fetching = false;
@@ -213,7 +208,19 @@ export function DashboardPage() {
       fetching = true;
 
       try {
-        const list = await fetchConveyorsApi();
+        let list: ConveyorApi[] = [];
+
+        if (isStaff) {
+          if (!factoryId || Number.isNaN(factoryId)) {
+            console.error("❌ Staff không có factoryId trong localStorage");
+            toast.error("Staff thiếu factoryId, vui lòng đăng nhập lại!");
+            return;
+          }
+          list = await fetchConveyorsByFactoryApi(factoryId);
+        } else {
+          list = await fetchConveyorsApi();
+        }
+
         if (isMounted) setConveyors(list);
       } catch (err) {
         console.error(err);
@@ -230,11 +237,8 @@ export function DashboardPage() {
       isMounted = false;
       clearInterval(interval);
     };
-  }, []);
+  }, [isStaff, factoryId]);
 
-  // ======================
-  // LẤY RECORD MỚI NHẤT THEO NAME
-  // ======================
   const latestConveyors = useMemo(() => {
     const map = new Map<string, ConveyorApi>();
 
@@ -256,17 +260,12 @@ export function DashboardPage() {
     return Array.from(map.values());
   }, [conveyors]);
 
-  // ======================
-  // BUILD UI STATIONS
-  // ======================
   const stations: StationWithISO[] = useMemo(() => {
     return latestConveyors.map((c) => ({
       id: String(c.id),
       name: c.name,
       area: `Xưởng ${c.factory_id}`,
-      // giữ format display cho UI
       lastUpdate: new Date(c.created_at).toLocaleString("vi-VN"),
-      // lưu thêm ISO để filter/export chính xác
       lastUpdateISO: c.created_at,
       status: c.status === "running" ? "running" : "stopped",
       issue:
@@ -276,9 +275,6 @@ export function DashboardPage() {
     }));
   }, [latestConveyors]);
 
-  // ======================
-  // Filter search
-  // ======================
   const filteredStations = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return stations;
@@ -322,9 +318,6 @@ export function DashboardPage() {
     ];
   }, [normalStations, incidentStations.length]);
 
-  // ======================
-  // INCIDENTS STATISTICS (SEARCH + PAGINATION)
-  // ======================
   const incidentFiltered = useMemo(() => {
     const q = statsSearch.trim().toLowerCase();
     if (!q) return incidentStations;
@@ -350,10 +343,6 @@ export function DashboardPage() {
     if (statsPage > incidentTotalPages) setStatsPage(1);
   }, [incidentTotalPages, statsPage]);
 
-  // ======================
-  // OPEN ASSIGN DIALOG
-  // load fixer ACTIVE + assignment READY
-  // ======================
   const handleAssignTechnician = async (stationId: string) => {
     const station = stations.find((s) => s.id === stationId);
     if (!station) return;
@@ -372,12 +361,10 @@ export function DashboardPage() {
         (a) => String(a.status || "").toLowerCase() === "ready",
       );
 
-      // Map user_id -> assignment_id
       const map: Record<number, number> = {};
       for (const a of readyAssignments) map[a.user_id] = a.id;
       setReadyAssignmentMap(map);
 
-      // Chỉ show fixer có READY assignment
       const readyUserIds = new Set(readyAssignments.map((a) => a.user_id));
       const availableFixers = fixers.filter((f) => readyUserIds.has(f.id));
 
@@ -390,10 +377,6 @@ export function DashboardPage() {
     }
   };
 
-  // ======================
-  // CONFIRM ASSIGNMENT
-  // update assignment READY -> ASSIGNED
-  // ======================
   const handleAssignConfirm = async (technicianIds: string[]) => {
     if (!selectedStation) return;
 
@@ -451,9 +434,6 @@ export function DashboardPage() {
     }
   };
 
-  // ======================
-  // THỐNG KÊ THEO NGÀY (CÓ FULL CONVEYOR TRONG NGÀY)
-  // ======================
   const statsByDate = useMemo(() => {
     const map = new Map<string, StationWithISO[]>();
 
@@ -467,9 +447,7 @@ export function DashboardPage() {
       map.get(dateKey)!.push(s);
     });
 
-    // sort ngày mới -> cũ (dùng trick parse lại theo vi-VN có thể lệch, nên dùng ISO max)
     const sorted = Array.from(map.entries()).sort((a, b) => {
-      // vì dateKey kiểu vi-VN khó parse, mình dùng time max của list đó
       const ta = Math.max(
         ...a[1].map((x) => new Date(String(x.lastUpdateISO || "")).getTime()),
       );
@@ -484,7 +462,6 @@ export function DashboardPage() {
       const running = list.filter((x) => x.status === "running").length;
       const stopped = list.filter((x) => x.status === "stopped").length;
 
-      // sort tên cho đẹp
       list.sort((a, b) => a.name.localeCompare(b.name));
 
       return {
@@ -497,10 +474,9 @@ export function DashboardPage() {
     });
   }, [stations]);
 
-  // ======================
-  // AI VOICE ALERT (2 lần/station)
-  // ======================
   useEffect(() => {
+    if (isStaff) return;
+
     const stoppedStations = stations.filter((s) => s.status === "stopped");
     if (stoppedStations.length === 0) return;
 
@@ -524,9 +500,8 @@ export function DashboardPage() {
         }, 12000);
       }
     });
-  }, [stations, alertCountMap]);
+  }, [stations, alertCountMap, isStaff]);
 
-  // reset alertCount khi station chạy lại
   useEffect(() => {
     const runningStations = stations.filter((s) => s.status === "running");
     if (runningStations.length === 0) return;
@@ -540,9 +515,6 @@ export function DashboardPage() {
     });
   }, [stations]);
 
-  // ======================
-  // EXCEL EXPORT (Today / Range)
-  // ======================
   const exportStatisticsExcel = () => {
     const today = new Date().toISOString().slice(0, 10);
 
@@ -554,10 +526,8 @@ export function DashboardPage() {
       return;
     }
 
-    // ✅ luôn dùng stations gốc, KHÔNG phụ thuộc search/filter ngoài UI
     const baseStations = stations;
 
-    // helper: check range ISO
     const inRange = (isoStr: string) => {
       const time = new Date(isoStr).getTime();
       const f = new Date(from).setHours(0, 0, 0, 0);
@@ -565,12 +535,10 @@ export function DashboardPage() {
       return time >= f && time <= t;
     };
 
-    // ✅ incidents trong range
     const incidentsFiltered = baseStations.filter(
       (s) => s.status === "stopped" && inRange(String(s.lastUpdateISO || "")),
     );
 
-    // ✅ stats theo ngày trong range
     const map = new Map<
       string,
       { total: number; running: number; stopped: number }
@@ -600,19 +568,12 @@ export function DashboardPage() {
       "Đang lỗi": v.stopped,
     }));
 
-    console.log("EXPORT:", { from, to });
-    console.log("stations:", baseStations.length);
-    console.log("statsRange rows:", statsRange.length);
-    console.log("incidentsFiltered rows:", incidentsFiltered.length);
-
-    // ✅ nếu rỗng thì báo rõ
     if (statsRange.length === 0 && incidentsFiltered.length === 0) {
       toast.warning("Khoảng ngày này không có dữ liệu để xuất!");
     }
 
     const wb = XLSX.utils.book_new();
 
-    // ✅ Sheet 1: luôn có header
     const ws1 = XLSX.utils.aoa_to_sheet([
       ["Ngày", "Tổng băng truyền", "Đang chạy", "Đang lỗi"],
     ]);
@@ -623,7 +584,6 @@ export function DashboardPage() {
       });
     }
 
-    // ✅ Sheet 2: luôn có header
     const ws2 = XLSX.utils.aoa_to_sheet([
       ["Tên băng truyền", "Khu vực", "Cập nhật lúc", "Mô tả sự cố"],
     ]);
@@ -654,77 +614,92 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* TOP HEADER */}
-      <div className="rounded-2xl border bg-gradient-to-r from-white to-gray-50 shadow-sm p-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-            Andon Dashboard
-          </h1>
-          <p className="text-sm text-gray-500">
-            Giám sát băng truyền theo thời gian thực
-          </p>
-        </div>
+      {/* Header Section with Gradient */}
+      <div className="rounded-2xl border bg-gradient-to-br from-blue-50 via-white to-indigo-50 shadow-lg p-6">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-3 shadow-lg">
+              <Activity className="size-8 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                Andon Dashboard
+              </h1>
+              <p className="text-sm text-gray-600 mt-1">
+                Giám sát băng truyền theo thời gian thực
+              </p>
+            </div>
+          </div>
 
-        {/* Search */}
-        <div className="relative w-full md:w-[360px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Tìm băng truyền / khu vực..."
-            className="w-full rounded-xl border bg-white pl-10 pr-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-900/10"
-          />
+          <div className="relative w-full md:w-96">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tìm kiếm băng truyền hoặc khu vực..."
+              className="w-full rounded-2xl border-2 border-gray-200 bg-white pl-12 pr-4 py-3 text-sm font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all shadow-sm"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Summary */}
-      <div className="rounded-2xl border bg-white shadow-sm p-4">
+      {/* Summary Cards */}
+      <div className="rounded-2xl border bg-white shadow-lg p-6">
         <AndonSummary />
       </div>
 
-      <Tabs defaultValue="stations" className="w-full">
-        <div className="sticky top-3 z-50">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4 rounded-2xl bg-gray-100 p-1 shadow-inner">
+      {/* Tabs */}
+      <Tabs value={tabValue} onValueChange={setTabValue} className="w-full">
+        <div className="sticky top-20 z-40 pb-4 ">
+          <TabsList
+            className={`grid w-full max-w-3xl mx-auto ${
+              allowedTabs.length === 1 ? "grid-cols-1" : "grid-cols-4"
+            } rounded-2xl bg-gradient-to-r from-gray-100 to-gray-50 p-0.5 shadow-md border`}
+          >
             <TabsTrigger
               value="stations"
-              className="rounded-xl flex items-center gap-2"
+              className="rounded-xl flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all"
             >
               <LayoutGrid className="size-4" />
-              Băng truyền
+              <span className="font-semibold">Băng truyền</span>
             </TabsTrigger>
 
-            <TabsTrigger
-              value="incidents"
-              className="rounded-xl flex items-center gap-2"
-            >
-              <AlertTriangle className="size-4" />
-              Sự cố
-              {incidentStations.length > 0 && (
-                <Badge className="ml-2 bg-red-600">
-                  {incidentStations.length}
-                </Badge>
-              )}
-            </TabsTrigger>
+            {!isStaff && (
+              <>
+                <TabsTrigger
+                  value="incidents"
+                  className="rounded-xl flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all"
+                >
+                  <AlertTriangle className="size-4" />
+                  <span className="font-semibold">Sự cố</span>
+                  {incidentStations.length > 0 && (
+                    <Badge className="ml-1 bg-red-600 text-white shadow-sm">
+                      {incidentStations.length}
+                    </Badge>
+                  )}
+                </TabsTrigger>
 
-            <TabsTrigger
-              value="analytics"
-              className="rounded-xl flex items-center gap-2"
-            >
-              <BarChart3 className="size-4" />
-              Phân tích
-            </TabsTrigger>
+                <TabsTrigger
+                  value="analytics"
+                  className="rounded-xl flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all"
+                >
+                  <BarChart3 className="size-4" />
+                  <span className="font-semibold">Phân tích</span>
+                </TabsTrigger>
 
-            <TabsTrigger
-              value="statistics"
-              className="rounded-xl flex items-center gap-2"
-            >
-              <Table2 className="size-4" />
-              Thống kê
-            </TabsTrigger>
+                <TabsTrigger
+                  value="statistics"
+                  className="rounded-xl flex items-center justify-center gap-2 data-[state=active]:bg-white data-[state=active]:shadow-md transition-all"
+                >
+                  <Table2 className="size-4" />
+                  <span className="font-semibold">Thống kê</span>
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
         </div>
 
-        {/* TAB Băng truyền */}
+        {/* Stations Tab */}
         <TabsContent value="stations" className="mt-6">
           {loadingStations ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -733,16 +708,18 @@ export function DashboardPage() {
               ))}
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-8">
               {stationsByFactory.map((factory) => (
-                <div key={factory.factoryName} className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Factory className="size-4 text-gray-600" />
-                    <h2 className="text-lg font-semibold text-gray-900">
+                <div key={factory.factoryName} className="space-y-4">
+                  <div className="flex items-center gap-3 px-2">
+                    <div className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-2 shadow-md">
+                      <Factory className="size-5 text-white" />
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">
                       {factory.factoryName}
                     </h2>
-                    <Badge className="bg-gray-900 text-white">
-                      {factory.list.length}
+                    <Badge className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm">
+                      {factory.list.length} thiết bị
                     </Badge>
                   </div>
 
@@ -751,17 +728,17 @@ export function DashboardPage() {
                       {factory.list.map((station) => (
                         <motion.div
                           key={station.id}
-                          initial={{ opacity: 0, y: 10 }}
+                          initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="cursor-pointer"
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          transition={{ duration: 0.3 }}
+                          className="cursor-pointer group"
                           onClick={() => {
                             setSelectedId(Number(station.id));
                             setOpenDetail(true);
                           }}
                         >
-                          <div className="rounded-2xl border bg-white shadow-sm hover:shadow-md transition p-2">
+                          <div className="rounded-2xl border-2 bg-white shadow-sm hover:shadow-xl hover:border-blue-300 transition-all duration-300 p-3 group-hover:scale-[1.02]">
                             <AndonStation {...station} onAssign={undefined} />
                           </div>
                         </motion.div>
@@ -772,426 +749,464 @@ export function DashboardPage() {
               ))}
 
               {stationsByFactory.length === 0 && (
-                <div className="text-center py-10 text-gray-500">
-                  Không có dữ liệu băng truyền
+                <div className="text-center py-20 rounded-2xl border-2 border-dashed bg-gray-50">
+                  <Activity className="size-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-lg font-semibold text-gray-500">
+                    Không có dữ liệu băng truyền
+                  </p>
                 </div>
               )}
             </div>
           )}
         </TabsContent>
 
-        {/* TAB Sự cố */}
-        <TabsContent value="incidents" className="mt-6">
-          {incidentStations.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {incidentStations.map((station) => (
-                <motion.div
-                  key={station.id}
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className="rounded-2xl border bg-red-50 shadow-sm hover:shadow-md transition cursor-pointer p-2"
-                  onClick={() => {
-                    setSelectedId(Number(station.id));
-                    setOpenDetail(true);
-                  }}
-                >
-                  <AndonStation
-                    {...station}
-                    onAssign={() => handleAssignTechnician(station.id)}
-                  />
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-2xl border bg-white shadow-sm p-10 text-center">
-              <div className="size-12 mx-auto rounded-full bg-green-100 flex items-center justify-center mb-3">
-                <span className="text-green-600 text-xl">✓</span>
-              </div>
-
-              <p className="text-base font-semibold text-gray-800">
-                Không có sự cố
-              </p>
-
-              <p className="text-sm text-gray-500 mt-1">
-                Hệ thống đang hoạt động ổn định, chưa ghi nhận cảnh báo nào.
-              </p>
-            </div>
-          )}
-        </TabsContent>
-
-        {/* TAB analytics */}
-        <TabsContent value="analytics" className="mt-6">
-          <div className="rounded-2xl border bg-white shadow-sm p-4">
-            <AndonStats
-              dailyIncidents={dailyIncidentsData}
-              statusDistribution={statusDistribution}
-            />
-          </div>
-        </TabsContent>
-
-        {/* TAB thống kê */}
-        <TabsContent value="statistics" className="mt-6 space-y-6">
-          {/* KPI mini */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border bg-white shadow-sm p-5">
-              <p className="text-sm text-gray-500">Tổng băng truyền</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
-                {stations.length}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border bg-white shadow-sm p-5">
-              <p className="text-sm text-gray-500">Đang chạy</p>
-              <p className="text-2xl font-bold text-green-600 mt-1">
-                {normalStations}
-              </p>
-            </div>
-
-            <div className="rounded-2xl border bg-white shadow-sm p-5">
-              <p className="text-sm text-gray-500">Đang lỗi</p>
-              <p className="text-2xl font-bold text-red-600 mt-1">
-                {incidentStations.length}
-              </p>
-            </div>
-          </div>
-
-          {/* Export Range UI */}
-          <div className="rounded-2xl border bg-white shadow-sm p-4 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-            <div>
-              <h2 className="text-base font-semibold text-gray-900">
-                Xuất thống kê Excel
-              </h2>
-              <p className="text-sm text-gray-500">
-                Chọn khoảng thời gian để xuất dữ liệu
-              </p>
-            </div>
-
-            <div className="flex flex-col md:flex-row md:items-end gap-3">
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={exportTodayOnly}
-                  onChange={(e) => setExportTodayOnly(e.target.checked)}
-                />
-                Chỉ hôm nay
-              </label>
-
-              {!exportTodayOnly && (
-                <>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-gray-500">Từ ngày</span>
-                    <input
-                      type="date"
-                      value={exportFrom}
-                      onChange={(e) => setExportFrom(e.target.value)}
-                      className="border rounded-xl px-3 py-2 text-sm"
-                    />
-                  </div>
-
-                  <div className="flex flex-col">
-                    <span className="text-xs text-gray-500">Đến ngày</span>
-                    <input
-                      type="date"
-                      value={exportTo}
-                      onChange={(e) => setExportTo(e.target.value)}
-                      className="border rounded-xl px-3 py-2 text-sm"
-                    />
-                  </div>
-                </>
-              )}
-
-              <Button
-                onClick={exportStatisticsExcel}
-                className="bg-green-600 hover:bg-green-700 rounded-xl"
-              >
-                Xuất Excel
-              </Button>
-            </div>
-          </div>
-
-          {/* TABLE theo ngày (CLICK XEM FULL CONVEYOR TRONG NGÀY) */}
-          <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
-            <div className="p-4 border-b">
-              <h2 className="text-base font-semibold text-gray-900">
-                Thống kê theo ngày (Xem chi tiết)
-              </h2>
-              <p className="text-sm text-gray-500">
-                Bấm vào ngày để xem toàn bộ conveyor trong ngày đó
-              </p>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 text-gray-600">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Ngày</th>
-                    <th className="px-4 py-3 text-center">Tổng</th>
-                    <th className="px-4 py-3 text-center">Đang chạy</th>
-                    <th className="px-4 py-3 text-center">Đang lỗi</th>
-                    <th className="px-4 py-3 text-right">Chi tiết</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {statsByDate.map((row) => {
-                    const isOpen = expandedDate === row.date;
-
-                    return (
-                      <>
-                        <tr
-                          key={row.date}
-                          className="border-t hover:bg-gray-50 transition cursor-pointer"
-                          onClick={() =>
-                            setExpandedDate((prev) =>
-                              prev === row.date ? null : row.date,
-                            )
-                          }
-                        >
-                          <td className="px-4 py-3 font-medium">{row.date}</td>
-                          <td className="px-4 py-3 text-center">{row.total}</td>
-                          <td className="px-4 py-3 text-center text-green-600 font-semibold">
-                            {row.running}
-                          </td>
-                          <td className="px-4 py-3 text-center text-red-600 font-semibold">
-                            {row.stopped}
-                          </td>
-                          <td className="px-4 py-3 text-right">
-                            <button className="text-blue-600 font-medium hover:underline">
-                              {isOpen ? "Ẩn" : "Xem"}
-                            </button>
-                          </td>
-                        </tr>
-
-                        {isOpen && (
-                          <tr className="border-t bg-gray-50/40">
-                            <td colSpan={5} className="px-4 py-4">
-                              <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
-                                <div className="p-3 border-b flex items-center justify-between">
-                                  <p className="text-sm font-semibold text-gray-900">
-                                    Danh sách băng truyền ngày {row.date}
-                                  </p>
-                                  <Badge className="bg-gray-900 text-white">
-                                    {row.conveyors.length} conveyor
-                                  </Badge>
-                                </div>
-
-                                <div className="max-h-[360px] overflow-auto">
-                                  <table className="w-full text-sm">
-                                    <thead className="sticky top-0 bg-gray-50 text-gray-600 z-10">
-                                      <tr>
-                                        <th className="px-4 py-3 text-left">
-                                          Tên
-                                        </th>
-                                        <th className="px-4 py-3 text-left">
-                                          Khu vực
-                                        </th>
-                                        <th className="px-4 py-3 text-left">
-                                          Trạng thái
-                                        </th>
-                                        <th className="px-4 py-3 text-left">
-                                          Cập nhật
-                                        </th>
-                                      </tr>
-                                    </thead>
-
-                                    <tbody>
-                                      {row.conveyors.map((c) => (
-                                        <tr
-                                          key={c.id}
-                                          className="border-t hover:bg-gray-50 cursor-pointer"
-                                          onClick={() => {
-                                            setSelectedId(Number(c.id));
-                                            setOpenDetail(true);
-                                          }}
-                                        >
-                                          <td className="px-4 py-3 font-medium">
-                                            {c.name}
-                                          </td>
-                                          <td className="px-4 py-3">
-                                            {c.area}
-                                          </td>
-                                          <td className="px-4 py-3">
-                                            {c.status === "running" ? (
-                                              <Badge className="bg-green-600 text-white">
-                                                Running
-                                              </Badge>
-                                            ) : (
-                                              <Badge className="bg-red-600 text-white">
-                                                Stopped
-                                              </Badge>
-                                            )}
-                                          </td>
-                                          <td className="px-4 py-3 text-gray-500">
-                                            {c.lastUpdate}
-                                          </td>
-                                        </tr>
-                                      ))}
-
-                                      {row.conveyors.length === 0 && (
-                                        <tr>
-                                          <td
-                                            colSpan={4}
-                                            className="px-4 py-8 text-center text-gray-500"
-                                          >
-                                            Không có conveyor trong ngày này
-                                          </td>
-                                        </tr>
-                                      )}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            </td>
-                          </tr>
-                        )}
-                      </>
-                    );
-                  })}
-
-                  {statsByDate.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className="px-4 py-8 text-center text-gray-500"
-                      >
-                        Chưa có dữ liệu
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* TABLE lỗi */}
-          <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
-            <div className="p-4 border-b flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-              <div>
-                <h2 className="text-base font-semibold text-gray-900">
-                  Danh sách băng truyền đang lỗi
-                </h2>
-              </div>
-
-              <div className="flex items-center gap-3 w-full md:w-auto">
-                <div className="relative flex-1 md:w-[320px]">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
-                  <input
-                    value={statsSearch}
-                    onChange={(e) => {
-                      setStatsSearch(e.target.value);
-                      setStatsPage(1);
-                    }}
-                    placeholder="Tìm tên / khu vực / mô tả..."
-                    className="w-full rounded-xl border bg-white pl-10 pr-3 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-900/10"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="overflow-x-auto max-h-[520px]">
-              <table className="w-full text-sm">
-                <thead className="sticky top-0 bg-gray-50 text-gray-600 z-10">
-                  <tr>
-                    <th className="px-4 py-3 text-left">Tên</th>
-                    <th className="px-4 py-3 text-left">Khu vực</th>
-                    <th className="px-4 py-3 text-left">Cập nhật</th>
-                    <th className="px-4 py-3 text-left">Mô tả</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {incidentPaged.map((s) => (
-                    <tr
-                      key={s.id}
-                      className="border-t cursor-pointer hover:bg-gray-50 transition"
+        {!isStaff && (
+          <>
+            {/* Incidents Tab */}
+            <TabsContent value="incidents" className="mt-6">
+              {incidentStations.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {incidentStations.map((station) => (
+                    <motion.div
+                      key={station.id}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                      className="rounded-2xl border-2 border-red-200 bg-gradient-to-br from-red-50 to-white shadow-lg hover:shadow-xl transition-all cursor-pointer p-3"
                       onClick={() => {
-                        setSelectedId(Number(s.id));
+                        setSelectedId(Number(station.id));
                         setOpenDetail(true);
                       }}
                     >
-                      <td className="px-4 py-3 font-semibold text-red-600">
-                        {s.name}
-                      </td>
-                      <td className="px-4 py-3">{s.area}</td>
-                      <td className="px-4 py-3 text-gray-500">
-                        {s.lastUpdate}
-                      </td>
-                      <td className="px-4 py-3 text-gray-600">{s.issue}</td>
-                    </tr>
+                      <AndonStation
+                        {...station}
+                        onAssign={() => handleAssignTechnician(station.id)}
+                      />
+                    </motion.div>
                   ))}
+                </div>
+              ) : (
+                <div className="rounded-2xl border-2 bg-gradient-to-br from-green-50 to-white shadow-lg p-16 text-center">
+                  <div className="size-20 mx-auto rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mb-6 shadow-lg">
+                    <CheckCircle2 className="size-10 text-white" />
+                  </div>
 
-                  {incidentPaged.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="px-4 py-10 text-center text-gray-500"
-                      >
-                        Không có dữ liệu phù hợp
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+                  <p className="text-2xl font-bold text-gray-900 mb-2">
+                    Hệ thống hoạt động ổn định
+                  </p>
 
-            {/* Pagination */}
-            <div className="p-4 border-t flex items-center justify-between">
-              <p className="text-xs text-gray-500">
-                Trang {statsPage}/{incidentTotalPages}
-              </p>
+                  <p className="text-gray-600">
+                    Tất cả băng truyền đang vận hành bình thường
+                  </p>
+                </div>
+              )}
+            </TabsContent>
 
-              <div className="flex items-center gap-2">
-                <button
-                  disabled={statsPage <= 1}
-                  onClick={() => setStatsPage((p) => Math.max(1, p - 1))}
-                  className="rounded-xl border bg-white px-3 py-1.5 text-sm shadow-sm disabled:opacity-40"
-                >
-                  Trước
-                </button>
-
-                <button
-                  disabled={statsPage >= incidentTotalPages}
-                  onClick={() =>
-                    setStatsPage((p) => Math.min(incidentTotalPages, p + 1))
-                  }
-                  className="rounded-xl border bg-white px-3 py-1.5 text-sm shadow-sm disabled:opacity-40"
-                >
-                  Sau
-                </button>
+            {/* Analytics Tab */}
+            <TabsContent value="analytics" className="mt-6">
+              <div className="rounded-2xl border bg-white shadow-lg p-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-2 shadow-md">
+                    <TrendingUp className="size-5 text-white" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Phân tích hiệu suất
+                  </h2>
+                </div>
+                <AndonStats
+                  dailyIncidents={dailyIncidentsData}
+                  statusDistribution={statusDistribution}
+                />
               </div>
-            </div>
-          </div>
-        </TabsContent>
+            </TabsContent>
+
+            {/* Statistics Tab */}
+            <TabsContent value="statistics" className="mt-6 space-y-6">
+              {/* Export Section */}
+              <div className="rounded-2xl border bg-gradient-to-br from-emerald-50 to-white shadow-lg p-6">
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+                  <div className="flex items-start gap-4">
+                    <div className="bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl p-2.5 shadow-md">
+                      <Download className="size-6 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900 mb-1">
+                        Xuất báo cáo Excel
+                      </h2>
+                      <p className="text-sm text-gray-600">
+                        Chọn khoảng thời gian để tải xuống dữ liệu thống kê
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col md:flex-row md:items-end gap-3">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 bg-white px-4 py-2 rounded-xl border-2 cursor-pointer hover:bg-gray-50 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={exportTodayOnly}
+                        onChange={(e) => setExportTodayOnly(e.target.checked)}
+                        className="size-4 rounded"
+                      />
+                      Chỉ hôm nay
+                    </label>
+
+                    {!exportTodayOnly && (
+                      <>
+                        <div className="flex flex-col gap-1">
+                          <label className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+                            <Calendar className="size-3" />
+                            Từ ngày
+                          </label>
+                          <input
+                            type="date"
+                            value={exportFrom}
+                            onChange={(e) => setExportFrom(e.target.value)}
+                            className="border-2 rounded-xl px-3 py-2 text-sm font-medium focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all"
+                          />
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                          <label className="text-xs font-semibold text-gray-600 flex items-center gap-1">
+                            <Calendar className="size-3" />
+                            Đến ngày
+                          </label>
+                          <input
+                            type="date"
+                            value={exportTo}
+                            onChange={(e) => setExportTo(e.target.value)}
+                            className="border-2 rounded-xl px-3 py-2 text-sm font-medium focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all"
+                          />
+                        </div>
+                      </>
+                    )}
+
+                    <Button
+                      onClick={exportStatisticsExcel}
+                      className="bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 rounded-xl shadow-md hover:shadow-lg transition-all px-6 py-2.5 font-semibold"
+                    >
+                      <Download className="size-4 mr-2" />
+                      Xuất Excel
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Daily Stats Table */}
+              <div className="rounded-2xl border bg-white shadow-lg overflow-hidden">
+                <div className="p-6 border-b bg-gradient-to-r from-gray-50 to-white">
+                  <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                    <BarChart3 className="size-5 text-blue-600" />
+                    Thống kê theo ngày
+                  </h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    Click vào từng ngày để xem chi tiết băng truyền
+                  </p>
+                </div>
+
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700">
+                      <tr>
+                        <th className="px-6 py-4 text-left font-bold">Ngày</th>
+                        <th className="px-6 py-4 text-center font-bold">
+                          Tổng
+                        </th>
+                        <th className="px-6 py-4 text-center font-bold">
+                          <span className="flex items-center justify-center gap-1">
+                            <CheckCircle2 className="size-4 text-green-600" />
+                            Đang chạy
+                          </span>
+                        </th>
+                        <th className="px-6 py-4 text-center font-bold">
+                          <span className="flex items-center justify-center gap-1">
+                            <XCircle className="size-4 text-red-600" />
+                            Đang lỗi
+                          </span>
+                        </th>
+                        <th className="px-6 py-4 text-right font-bold">
+                          Chi tiết
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {statsByDate.map((row) => {
+                        const isOpen = expandedDate === row.date;
+
+                        return (
+                          <>
+                            <tr
+                              key={row.date}
+                              className="border-t hover:bg-blue-50 transition-colors cursor-pointer"
+                              onClick={() =>
+                                setExpandedDate((prev) =>
+                                  prev === row.date ? null : row.date,
+                                )
+                              }
+                            >
+                              <td className="px-6 py-4 font-semibold text-gray-900">
+                                {row.date}
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <Badge className="bg-gray-900 text-white">
+                                  {row.total}
+                                </Badge>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <Badge className="bg-green-100 text-green-700 border-green-200">
+                                  {row.running}
+                                </Badge>
+                              </td>
+                              <td className="px-6 py-4 text-center">
+                                <Badge className="bg-red-100 text-red-700 border-red-200">
+                                  {row.stopped}
+                                </Badge>
+                              </td>
+                              <td className="px-6 py-4 text-right">
+                                <Button
+                                  variant="ghost"
+                                  className="text-blue-600 font-semibold hover:bg-blue-100 rounded-lg"
+                                >
+                                  {isOpen ? "Ẩn bớt" : "Xem chi tiết"}
+                                </Button>
+                              </td>
+                            </tr>
+
+                            {isOpen && (
+                              <tr className="border-t bg-gray-50">
+                                <td colSpan={5} className="px-6 py-6">
+                                  <div className="rounded-xl border-2 bg-white shadow-md overflow-hidden">
+                                    <div className="p-4 border-b bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-between">
+                                      <p className="font-bold text-gray-900">
+                                        Chi tiết ngày {row.date}
+                                      </p>
+                                      <Badge className="bg-blue-600 text-white shadow-sm">
+                                        {row.conveyors.length} băng truyền
+                                      </Badge>
+                                    </div>
+
+                                    <div className="max-h-96 overflow-auto">
+                                      <table className="w-full text-sm">
+                                        <thead className="sticky top-0 bg-gray-100 text-gray-700 z-10">
+                                          <tr>
+                                            <th className="px-4 py-3 text-left font-semibold">
+                                              Tên băng truyền
+                                            </th>
+                                            <th className="px-4 py-3 text-left font-semibold">
+                                              Khu vực
+                                            </th>
+                                            <th className="px-4 py-3 text-center font-semibold">
+                                              Trạng thái
+                                            </th>
+                                            <th className="px-4 py-3 text-left font-semibold">
+                                              Cập nhật lúc
+                                            </th>
+                                          </tr>
+                                        </thead>
+
+                                        <tbody>
+                                          {row.conveyors.map((c) => (
+                                            <tr
+                                              key={c.id}
+                                              className="border-t hover:bg-gray-50 cursor-pointer transition-colors"
+                                              onClick={() => {
+                                                setSelectedId(Number(c.id));
+                                                setOpenDetail(true);
+                                              }}
+                                            >
+                                              <td className="px-4 py-3 font-semibold text-gray-900">
+                                                {c.name}
+                                              </td>
+                                              <td className="px-4 py-3 text-gray-700">
+                                                {c.area}
+                                              </td>
+                                              <td className="px-4 py-3 text-center">
+                                                {c.status === "running" ? (
+                                                  <Badge className="bg-green-600 text-white shadow-sm">
+                                                    Hoạt động
+                                                  </Badge>
+                                                ) : (
+                                                  <Badge className="bg-red-600 text-white shadow-sm animate-pulse">
+                                                    Dừng
+                                                  </Badge>
+                                                )}
+                                              </td>
+                                              <td className="px-4 py-3 text-gray-600">
+                                                {c.lastUpdate}
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </>
+                        );
+                      })}
+
+                      {statsByDate.length === 0 && (
+                        <tr>
+                          <td
+                            colSpan={5}
+                            className="px-6 py-16 text-center text-gray-500"
+                          >
+                            <Activity className="size-12 text-gray-300 mx-auto mb-3" />
+                            <p className="font-semibold">Chưa có dữ liệu</p>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Incidents Table */}
+              <div className="rounded-2xl border bg-white shadow-lg overflow-hidden">
+                <div className="p-6 border-b bg-gradient-to-r from-red-50 to-white flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                      <AlertTriangle className="size-5 text-red-600" />
+                      Băng truyền đang gặp sự cố
+                    </h2>
+                    <p className="text-sm text-gray-600 mt-1">
+                      Danh sách các băng truyền đang dừng hoạt động
+                    </p>
+                  </div>
+
+                  <div className="relative w-full md:w-80">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+                    <input
+                      value={statsSearch}
+                      onChange={(e) => {
+                        setStatsSearch(e.target.value);
+                        setStatsPage(1);
+                      }}
+                      placeholder="Tìm kiếm sự cố..."
+                      className="w-full rounded-xl border-2 bg-white pl-10 pr-4 py-2 text-sm font-medium outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto max-h-[600px]">
+                  <table className="w-full text-sm">
+                    <thead className="sticky top-0 bg-gradient-to-r from-gray-100 to-gray-50 text-gray-700 z-10">
+                      <tr>
+                        <th className="px-6 py-4 text-left font-bold">
+                          Tên băng truyền
+                        </th>
+                        <th className="px-6 py-4 text-left font-bold">
+                          Khu vực
+                        </th>
+                        <th className="px-6 py-4 text-left font-bold">
+                          Thời gian
+                        </th>
+                        <th className="px-6 py-4 text-left font-bold">Mô tả</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {incidentPaged.map((s) => (
+                        <tr
+                          key={s.id}
+                          className="border-t cursor-pointer hover:bg-red-50 transition-colors"
+                          onClick={() => {
+                            setSelectedId(Number(s.id));
+                            setOpenDetail(true);
+                          }}
+                        >
+                          <td className="px-6 py-4">
+                            <span className="font-bold text-red-600">
+                              {s.name}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-gray-700">{s.area}</td>
+                          <td className="px-6 py-4 text-gray-600">
+                            {s.lastUpdate}
+                          </td>
+                          <td className="px-6 py-4 text-gray-600">{s.issue}</td>
+                        </tr>
+                      ))}
+
+                      {incidentPaged.length === 0 && (
+                        <tr>
+                          <td
+                            colSpan={4}
+                            className="px-6 py-16 text-center text-gray-500"
+                          >
+                            <CheckCircle2 className="size-12 text-gray-300 mx-auto mb-3" />
+                            <p className="font-semibold">Không có sự cố nào</p>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                {incidentTotalPages > 1 && (
+                  <div className="p-4 border-t bg-gray-50 flex items-center justify-between">
+                    <p className="text-sm text-gray-600 font-medium">
+                      Trang {statsPage} / {incidentTotalPages}
+                    </p>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        disabled={statsPage <= 1}
+                        onClick={() => setStatsPage((p) => Math.max(1, p - 1))}
+                        className="rounded-xl disabled:opacity-40 font-semibold"
+                      >
+                        ← Trước
+                      </Button>
+
+                      <Button
+                        variant="outline"
+                        disabled={statsPage >= incidentTotalPages}
+                        onClick={() =>
+                          setStatsPage((p) =>
+                            Math.min(incidentTotalPages, p + 1),
+                          )
+                        }
+                        className="rounded-xl disabled:opacity-40 font-semibold"
+                      >
+                        Sau →
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </>
+        )}
       </Tabs>
 
-      {/* Dialog chi tiết */}
+      {/* Dialogs */}
       <ConveyorDetailDialog
         open={openDetail}
         conveyorId={selectedId}
         onClose={() => setOpenDetail(false)}
       />
 
-      {/* Assign dialog */}
-      <AssignTechnicianDialog
-        open={assignDialogOpen}
-        onOpenChange={(open) => {
-          setAssignDialogOpen(open);
-          if (!open) setSelectedStation(null);
-        }}
-        stationName={selectedStation?.name || ""}
-        stationIssue={selectedStation?.issue}
-        technicians={technicians.map((t) => ({
-          id: String(t.id),
-          name: t.name,
-          specialty: t.department,
-          status: t.status,
-        }))}
-        onAssign={(ids) => handleAssignConfirm(ids)}
-      />
-
-      {assignDialogOpen && loadingTechs && (
-        <div className="text-xs text-gray-500">Đang tải danh sách Fixer...</div>
+      {!isStaff && (
+        <AssignTechnicianDialog
+          open={assignDialogOpen}
+          onOpenChange={(open) => {
+            setAssignDialogOpen(open);
+            if (!open) setSelectedStation(null);
+          }}
+          stationName={selectedStation?.name || ""}
+          stationIssue={selectedStation?.issue}
+          technicians={technicians.map((t) => ({
+            id: String(t.id),
+            name: t.name,
+            specialty: t.department,
+            status: t.status,
+          }))}
+          onAssign={(ids) => handleAssignConfirm(ids)}
+        />
       )}
     </div>
   );

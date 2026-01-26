@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Factory, User, Lock, AlertCircle, Loader2 } from "lucide-react";
 import { Card } from "../components/ui/card";
 import { Label } from "../components/ui/label";

@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { Layout } from "./components/Layout";
 import { LoginPage } from "./pages/AuthPage";
 import { TechniciansPage } from "./pages/FixerPage";
 import { RegisterUserPage } from "./pages/RegisterPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { StaffManagementPage } from "./pages/StaffPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { Layout } from "./components/Layout";
 
 export default function App() {
   return (
@@ -28,7 +28,7 @@ export default function App() {
 
           {/* /technicians */}
           <Route
-            path="technicians"
+            path="/technicians"
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <TechniciansPage />
