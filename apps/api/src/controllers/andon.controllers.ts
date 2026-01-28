@@ -70,3 +70,21 @@ export const getConveyorsByFactoryController = async (
     res.status(400).json({ message: "Error fetching conveyors", error });
   }
 };
+
+// lấy ra id của deveice gắn với conveyor
+export const getConveyorByDeviceId = async (req: Request, res: Response) => {
+  const { deviceId } = req.params;
+
+  const [rows] = await db.execute(
+    "SELECT * FROM conveyor WHERE device_id = ?",
+    [deviceId],
+  );
+
+  if ((rows as any[]).length === 0) {
+    return res.status(404).json({
+      message: "No conveyor mapped to this device",
+    });
+  }
+
+  res.json((rows as any[])[0]);
+};

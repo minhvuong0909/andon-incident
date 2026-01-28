@@ -40,72 +40,77 @@ export const updateConveyorStatus = async (
 export const createConveyor = async (
   req: CreateConveyorReqBody,
 ): Promise<void> => {
-  // check có tồn tại trong factory
-  const factory = await db.execute("SELECT * FROM factory WHERE id = ?", [
+  const [factory] = await db.execute("SELECT id FROM factory WHERE id = ?", [
     req.factory_id,
   ]);
-  if (!factory) {
+
+  if ((factory as any[]).length === 0) {
     throw new ErrorWithStatus({
       message: "Factory does not exist",
       status: 400,
     });
   }
-  const query = "INSERT INTO conveyor (factory_id, name) VALUES (?, ?)";
-  const values = [req.factory_id, req.name];
+
+  // deviceId gắn trực tiếp vào conveyor
+  const query =
+    "INSERT INTO conveyor (factory_id, name, device_id) VALUES (?, ?, ?)";
+
+  const values = [req.factory_id, req.name, req.device_id];
+
   try {
     const [result] = await db.execute(query, values);
-    console.log(`Conveyor created with ID ${(result as any).insertId}`);
+    console.log(
+      `Conveyor created with ID ${(result as any).insertId}, device ${req.device_id}`,
+    );
   } catch (error) {
     console.error("Error creating conveyor:", error);
     throw error;
   }
 };
 
-//
-const DEVICE_TO_BELT: Record<string, number> = {
-  esp8266_01: 1,
-  esp32_02: 2,
-};
 export async function updateBeltStatus(data: ButtonEvent) {
   if (!data.pressed) return;
 
-  const beltId = DEVICE_TO_BELT[data.deviceId];
-  if (!beltId) {
-    console.log("Device chưa được gắn băng truyền:", data.deviceId);
+  // 1tìm conveyor theo device_id
+  const res = await fetch(
+    `http://localhost:4000/conveyor/by-device/${data.deviceId}`,
+  );
+
+  if (!res.ok) {
+    console.log("Device chưa được gắn băng chuyền:", data.deviceId);
     return;
   }
 
-  let nextStatus: "running" | "stopped" | null = null;
+  const conveyor = await res.json();
+  const beltId = conveyor.id;
 
+  let nextStatus: "running" | "stopped" | null = null;
   if (data.button === "ENTER") nextStatus = "stopped";
   if (data.button === "RESET") nextStatus = "running";
-
   if (!nextStatus) return;
 
   try {
-    // Update conveyor
-    const res = await fetch(`http://localhost:4000/conveyor/status/${beltId}`, {
+    //  update conveyor
+    await fetch(`http://localhost:4000/conveyor/status/${beltId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: nextStatus }),
     });
 
-    console.log(`Belt ${beltId} -> ${nextStatus}`, res.status);
+    console.log(`Belt ${beltId} -> ${nextStatus}`);
 
-    // Nếu RESET => update assignment luôn
+    // RESET thì update assignment
     if (data.button === "RESET") {
-      const res2 = await fetch(
+      await fetch(
         `http://localhost:4000/assignment/update-by-conveyor/${beltId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            status: "Done",
-          }),
+          body: JSON.stringify({ status: "Done" }),
         },
       );
 
-      console.log(`Assignment belt ${beltId} -> Done`, res2.status);
+      console.log(`Assignment belt ${beltId} -> Done`);
     }
   } catch (err) {
     console.log("Call API lỗi:", err);

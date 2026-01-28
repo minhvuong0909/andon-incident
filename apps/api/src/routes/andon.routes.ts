@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createConveyorController,
   getAllConveyorsController,
+  getConveyorByDeviceId,
   getConveyorController,
   getConveyorsByFactoryController,
   updateConveyorStatusController,
@@ -20,4 +21,8 @@ andonRoutes.get("/", getAllConveyorsController);
 
 // get all conveyors by factory id
 andonRoutes.get("/factory/:factory_id", getConveyorsByFactoryController);
+
+// get conveyor by device id
+andonRoutes.get("/by-device/:deviceId", getConveyorByDeviceId);
+
 export default andonRoutes;
