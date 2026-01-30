@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("EspFlasher")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bf595849edaeacdeb2c17473e1d542db73f61e30")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8b214fb357ef6032df323534cb3fc3f10218b246")]
 [assembly: System.Reflection.AssemblyProductAttribute("EspFlasher")]
 [assembly: System.Reflection.AssemblyTitleAttribute("EspFlasher")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

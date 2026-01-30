@@ -245,8 +245,8 @@
 
                 <ComboBox x:Name="FactoryComboBox"
               Height="42"
-              Style="{StaticResource ModernComboBox}"
-              ToolTip="Chọn nhà máy">
+              ToolTip="Chọn nhà máy"
+                          >
                 </ComboBox>
             </StackPanel>
 
@@ -256,36 +256,26 @@
                            Style="{StaticResource ModernLabel}"/>
                 <TextBox x:Name="TxtConveyorName"
                          Height="42"
-                         Style="{StaticResource ModernTextBox}"
                          ToolTip="Nhập tên băng chuyền (VD: Băng chuyền 1)"/>
             </StackPanel>
 
             <!-- Device ID -->
             <StackPanel Grid.Row="3" Margin="0,0,0,30">
                 <TextBlock Text="🔌 Thiết Bị ESP"
-                           Style="{StaticResource ModernLabel}"/>
-                <ComboBox x:Name="CmbDeviceId"
-                          Height="42"
-                          Style="{StaticResource ModernComboBox}"
-                          IsEditable="False"
-                          ToolTip="Chọn thiết bị ESP để kết nối">
-                    <ComboBox.ItemContainerStyle>
-                        <Style TargetType="ComboBoxItem">
-                            <Setter Property="Padding" Value="12,10"/>
-                            <Setter Property="FontSize" Value="14"/>
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Background" Value="#F5F5F5"/>
-                                </Trigger>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Background" Value="#E3F2FD"/>
-                                    <Setter Property="Foreground" Value="#1976D2"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ComboBox.ItemContainerStyle>
-                </ComboBox>
+               Style="{StaticResource ModernLabel}"/>
+
+                <!-- ✅ Device ID Text Only -->
+                <TextBox x:Name="TxtDeviceId"
+             Height="42"
+             FontSize="14"
+             Padding="12,10"
+             IsReadOnly="True"
+             BorderThickness="1"
+             Background="#FAFAFA"
+             Foreground="#1976D2"
+             ToolTip="Device ID sau khi flash thành công"/>
             </StackPanel>
+
 
             <!-- Info box -->
             <Border Grid.Row="4"

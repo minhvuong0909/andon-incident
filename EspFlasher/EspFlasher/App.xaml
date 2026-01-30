@@ -2,8 +2,19 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:EspFlasher"
-             StartupUri="CreateConveyor.xaml">
+             StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Style x:Key="BlueButton" TargetType="Button">
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Padding" Value="10,5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="#b0e0e6"/>
+            <Setter Property="Foreground" Value="#00b7eb"/>
+            <Setter Property="BorderBrush" Value="#7df9ff"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
     </Application.Resources>
 </Application>

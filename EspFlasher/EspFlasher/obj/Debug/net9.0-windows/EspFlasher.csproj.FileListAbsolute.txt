@@ -176,3 +176,7 @@ D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\bin\De
 D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\bin\Debug\net9.0-windows\Microsoft.Extensions.FileProviders.Abstractions.dll
 D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\bin\Debug\net9.0-windows\Microsoft.Extensions.FileProviders.Physical.dll
 D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\bin\Debug\net9.0-windows\Microsoft.Extensions.FileSystemGlobbing.dll
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\obj\Debug\net9.0-windows\EspFlasher_MarkupCompile.lref
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\obj\Debug\net9.0-windows\App.baml
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\bin\Debug\net9.0-windows\DotNetEnv.dll
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\bin\Debug\net9.0-windows\Sprache.dll

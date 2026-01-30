@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using EspFlasher.DAL.Repos;
+using EspFlasher.Dtos;
 using EspFlasher.Entities;
 
 namespace EspFlasher.Services
@@ -26,20 +27,20 @@ namespace EspFlasher.Services
             _httpClient = new HttpClient();
         }
 
-        //public async Task<bool> CreateConveyorAsync(CreateConveyorRequest req)
-        //{
-        //    string url = "http://localhost:4000/conveyor/create";
+        public async Task<bool> CreateConveyorAsync(CreateConveyorRequest req)
+        {
+            string url = "http://localhost:4000/conveyor/create";
 
-        //    HttpResponseMessage res =
-        //        await _httpClient.PostAsJsonAsync(url, req);
+            HttpResponseMessage res =
+                await _httpClient.PostAsJsonAsync(url, req);
 
-        //    if (res.IsSuccessStatusCode)
-        //        return true;
+            if (res.IsSuccessStatusCode)
+                return true;
 
-        //    string error = await res.Content.ReadAsStringAsync();
-        //    //MessageBox.Show("API Error: " + error);
+            string error = await res.Content.ReadAsStringAsync();
+            //MessageBox.Show("API Error: " + error);
 
-        //    return false;
-        //}
+            return false;
+        }
     }
 }

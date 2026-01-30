@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using EspFlasher.Dtos;
+using EspFlasher.Entities;
 using EspFlasher.Services;
 
 namespace EspFlasher
@@ -20,58 +22,52 @@ namespace EspFlasher
     /// </summary>
     public partial class CreateConveyor : Window
     {
-
+        
         public CreateConveyor()
         {
             InitializeComponent();
         }
-
+       
         private FactoryService _conveyorService = new FactoryService();
-        private void BtnCreate_Click(object sender, RoutedEventArgs e)
+        public string ConveyorInfo { get; set; }
+        private async void BtnCreate_Click(object sender, RoutedEventArgs e)
         {
-            //    try
-            //    {
-            //        int factoryId = int.Parse(TxtFactoryId.Text);
-            //        string name = TxtConveyorName.Text;
-            //        string deviceId = CmbDeviceId.SelectedItem.ToString();
+            try
+            {
+                int factoryId = (int)FactoryComboBox.SelectedValue;
+                string name = TxtConveyorName.Text;
+                string deviceId = TxtDeviceId.Text;
 
-            //        var api = new FactoryService();
+                var api = new FactoryService();
 
-            //        var req = new CreateConveyorRequest
-            //        {
-            //            factory_id = factoryId,
-            //            name = name,
-            //            device_id = deviceId
-            //        };
+                var req = new CreateConveyorRequest
+                {
+                    factory_id = factoryId,
+                    name = name,
+                    device_id = deviceId
+                };
 
-            //        bool ok = await api.CreateConveyorAsync(req);
+                bool ok = await api.CreateConveyorAsync(req);
 
-            //        if (ok)
-            //        {
-            //            MessageBox.Show("✅ Conveyor created successfully!");
-            //            this.Close();
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        MessageBox.Show("Error: " + ex.Message);
-            //    }
+                if (ok)
+                {
+                    MessageBox.Show("✅ Conveyor created successfully!");
+                    this.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
         }
-
-        // factory combobox fill
-        //public void FillComboBox()
-        //{
-        //    FactoryComboBox.ItemsSource = _conveyorService.GetAllFactories();
-        //    FactoryComboBox.DisplayMemberPath = "Name";
-        //    FactoryComboBox.SelectedValuePath = "Id";
-        //}
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             //    FillComboBox();
             FactoryComboBox.ItemsSource = _conveyorService.GetAllFactories();
             FactoryComboBox.DisplayMemberPath = "Name";
-            //FactoryComboBox.SelectedValuePath = "Id";
+            FactoryComboBox.SelectedValuePath = "Id";
+            TxtDeviceId.Text = ConveyorInfo;
         }
     }
 }

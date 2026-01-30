@@ -16,5 +16,10 @@ namespace EspFlasher.DAL.Repos
         {
             return _context.Factories.ToList();
         }
+
+        public List<Conveyor> GetAllConveyors()
+        {
+            return _context.Conveyors.Include(c => c.Factory).ToList();
+        }
     }
 }
