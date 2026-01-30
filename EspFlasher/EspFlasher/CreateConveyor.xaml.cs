@@ -69,5 +69,10 @@ namespace EspFlasher
             FactoryComboBox.SelectedValuePath = "Id";
             TxtDeviceId.Text = ConveyorInfo;
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

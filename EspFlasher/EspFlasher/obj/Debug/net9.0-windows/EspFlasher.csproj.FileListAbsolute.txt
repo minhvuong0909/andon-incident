@@ -180,3 +180,4 @@ D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\obj\De
 D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\obj\Debug\net9.0-windows\App.baml
 D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\bin\Debug\net9.0-windows\DotNetEnv.dll
 D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\bin\Debug\net9.0-windows\Sprache.dll
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\EspFlasher\bin\Debug\net9.0-windows\appsettings.json

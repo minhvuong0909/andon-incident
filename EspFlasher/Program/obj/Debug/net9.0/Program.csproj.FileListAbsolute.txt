@@ -1,0 +1,15 @@
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\bin\Debug\net9.0\Program.exe
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\bin\Debug\net9.0\Program.deps.json
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\bin\Debug\net9.0\Program.runtimeconfig.json
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\bin\Debug\net9.0\Program.dll
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\bin\Debug\net9.0\Program.pdb
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\obj\Debug\net9.0\Program.GeneratedMSBuildEditorConfig.editorconfig
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\obj\Debug\net9.0\Program.AssemblyInfoInputs.cache
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\obj\Debug\net9.0\Program.AssemblyInfo.cs
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\obj\Debug\net9.0\Program.csproj.CoreCompileInputs.cache
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\obj\Debug\net9.0\Program.sourcelink.json
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\obj\Debug\net9.0\Program.dll
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\obj\Debug\net9.0\refint\Program.dll
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\obj\Debug\net9.0\Program.pdb
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\obj\Debug\net9.0\Program.genruntimeconfig.cache
+D:\back_end\K19-MERN\allOfProject-js\andon-monorepo\EspFlasher\Program\obj\Debug\net9.0\ref\Program.dll
