@@ -1,7 +1,22 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function TabLayout() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const protect = async () => {
+      const loggedIn = await AsyncStorage.getItem("isLoggedIn");
+
+      if (loggedIn !== "true") {
+        router.replace("/login");
+      }
+    };
+
+    protect();
+  }, []);
   return (
     <Tabs
       screenOptions={{
@@ -17,7 +32,7 @@ export default function TabLayout() {
     >
       {/* Dashboard */}
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           title: "Dashboard",
           tabBarIcon: ({ color, size }) => (

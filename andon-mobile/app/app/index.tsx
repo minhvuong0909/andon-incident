@@ -2,22 +2,29 @@ import { useEffect } from "react";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// check session
 export default function Index() {
   const router = useRouter();
 
   useEffect(() => {
-    const checkSession = async () => {
-      const token = await AsyncStorage.getItem("token");
+    const checkLogin = async () => {
+      try {
+        // Check user đã lưu chưa
+        const user = await AsyncStorage.getItem("user");
 
-      if (token) {
-        router.replace("/(tabs)");
-      } else {
+        if (user) {
+          // Đã login → vào home
+          router.replace("/home");
+        } else {
+          // Chưa login → vào login
+          router.replace("/login");
+        }
+      } catch (error) {
+        // Nếu storage lỗi → quay về login
         router.replace("/login");
       }
     };
 
-    checkSession();
+    checkLogin();
   }, []);
 
   return null;

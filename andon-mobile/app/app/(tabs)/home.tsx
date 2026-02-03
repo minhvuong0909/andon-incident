@@ -7,11 +7,12 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import axios from "axios";
 
-// ✅ ICON LIBRARY
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { socket } from "@/services/socket";
 
 export default function HomeScreen() {
   const [conveyors, setConveyors] = useState<any[]>([]);
@@ -32,6 +33,27 @@ export default function HomeScreen() {
 
   useEffect(() => {
     fetchConveyors();
+
+    // Listen Button Event từ backend
+    socket.on("button:event", (data) => {
+      console.log("Realtime Button Event:", data);
+
+      // Nếu băng chuyền STOPPED thì báo động ngay
+      if (data.status === "stopped") {
+        Alert.alert(
+          "🚨 SỰ CỐ KHẨN CẤP",
+          `Băng chuyền ${data.device_id} đã DỪNG!`,
+          [{ text: "OK" }],
+        );
+      }
+
+      // Refresh dashboard ngay
+      fetchConveyors();
+    });
+
+    return () => {
+      socket.off("button:event");
+    };
   }, []);
 
   const onRefresh = () => {
@@ -39,7 +61,7 @@ export default function HomeScreen() {
     fetchConveyors();
   };
 
-  // ✅ Thống kê theo status
+  // Thống kê theo status
   const runningCount = conveyors.filter((c) => c.status === "running").length;
   const warningCount = conveyors.filter((c) => c.status === "warning").length;
   const errorCount = conveyors.filter(
@@ -47,7 +69,7 @@ export default function HomeScreen() {
   ).length;
   const totalCount = conveyors.length;
 
-  // ✅ Render status badge (FIX ICON)
+  // Render status badge (FIX ICON)
   const renderStatusBadge = (status: string) => {
     const statusConfig: any = {
       running: {
@@ -93,7 +115,7 @@ export default function HomeScreen() {
     );
   };
 
-  // ✅ Loading UI
+  // Loading UI
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -222,7 +244,7 @@ export default function HomeScreen() {
                 activeOpacity={0.7}
               >
                 <View style={styles.deviceHeader}>
-                  {/* ✅ REMOVE deviceInfo */}
+                  {/*  REMOVE deviceInfo */}
                   <View>
                     <Text style={styles.deviceName}>{item.name}</Text>
                     <Text style={styles.deviceId}>ID: {item.id}</Text>
@@ -245,7 +267,7 @@ export default function HomeScreen() {
                 )}
 
                 {/* TIME */}
-                {item.lastUpdate && (
+                {item.updated_at && (
                   <View style={styles.deviceMeta}>
                     <MaterialCommunityIcons
                       name="clock-outline"
@@ -255,7 +277,7 @@ export default function HomeScreen() {
                     />
                     <Text style={styles.metaText}>
                       Cập nhật:{" "}
-                      {new Date(item.lastUpdate).toLocaleString("vi-VN")}
+                      {new Date(item.updated_at).toLocaleString("vi-VN")}
                     </Text>
                   </View>
                 )}

@@ -21,28 +21,39 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!username || !password) {
-      Alert.alert("Lỗi", "Vui lòng nhập tên đăng nhập và mật khẩu");
+      Alert.alert("Lỗi", "Vui lòng nhập đủ thông tin");
       return;
     }
 
     try {
       setLoading(true);
-      // call api
-      const response = await axios.post("http://localhost:4000/users/login", {
-        username: username,
-        password: password,
-      });
 
-      console.log("LOGIN RESPONSE:", response.data);
+      const response = await axios.post(
+        "http://localhost:4000/users/login", 
+        {
+          username,
+          password,
+        },
+      );
 
-      const token = response.data.token;
+      if (response.data.success === false) {
+        Alert.alert("Sai tài khoản hoặc mật khẩu");
+        return;
+      }
 
-      await AsyncStorage.setItem("token", token);
-      router.replace("/(tabs)/home");
-    } catch (error: any) {
-      console.log("LOGIN ERROR:", error);
+      const user = response.data.user;
 
-      router.replace("/(tabs)/home");
+      await AsyncStorage.setItem("role", user.role);
+      await AsyncStorage.setItem("name", user.name);
+      await AsyncStorage.setItem("userId", String(user.id));
+      await AsyncStorage.setItem("isLoggedIn", "true");
+
+      console.log("Login success, go Home");
+
+      router.dismissAll();
+      router.replace("/home");
+    } catch (error) {
+      Alert.alert("Lỗi đăng nhập", "Không kết nối được server");
     } finally {
       setLoading(false);
     }
