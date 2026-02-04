@@ -13,6 +13,8 @@ import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
+// export const API_URL = "http://localhost:4000"; // local
+export const API_URL = "http://192.168.152.189:4000"; // network
 export default function LoginScreen() {
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -28,13 +30,10 @@ export default function LoginScreen() {
     try {
       setLoading(true);
 
-      const response = await axios.post(
-        "http://localhost:4000/users/login", 
-        {
-          username,
-          password,
-        },
-      );
+      const response = await axios.post(`${API_URL}/users/login`, {
+        username,
+        password,
+      });
 
       if (response.data.success === false) {
         Alert.alert("Sai tài khoản hoặc mật khẩu");

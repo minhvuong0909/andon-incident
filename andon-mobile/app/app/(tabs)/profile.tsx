@@ -9,12 +9,7 @@ import {
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
-import { exportToCSV } from "@/services/exportFileToCSV";
-
-// ✅ ICON
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
-// ✅ Reload khi focus tab
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function ProfileScreen() {
@@ -24,7 +19,6 @@ export default function ProfileScreen() {
   const [userRole, setUserRole] = useState("");
   const [userId, setUserId] = useState("");
 
-  // ✅ Load user info mỗi lần mở Profile
   useFocusEffect(
     useCallback(() => {
       loadUserInfo();
@@ -45,39 +39,18 @@ export default function ProfileScreen() {
     }
   };
 
-  // ✅ Role label map
+  // Role label map
   const roleLabel: any = {
     admin: "Quản trị viên",
     manager: "Quản lý",
     operator: "Công nhân",
   };
 
-  // Export CSV
-  const handleExportCSV = () => {
-    try {
-      exportToCSV([
-        { id: 1, name: "BC1", status: "running" },
-        { id: 2, name: "BC2", status: "warning" },
-        { id: 3, name: "BC3", status: "error" },
-      ]);
-      Alert.alert("Thành công ✅", "Đã xuất file CSV");
-    } catch (error) {
-      Alert.alert("Lỗi ❌", "Không thể xuất file CSV");
-    }
-  };
-
   // Logout chuẩn
   const handleLogout = async () => {
-    console.log("✅ Logout bắt đầu...");
-
     // xóa toàn bộ session
     await AsyncStorage.clear();
-
-    console.log("✅ AsyncStorage cleared");
-
     router.replace("/login");
-
-    console.log("✅ Đã replace về login");
   };
 
   return (
@@ -122,11 +95,7 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>⚙ THAO TÁC</Text>
 
         {/* Export CSV */}
-        <TouchableOpacity
-          style={styles.actionButton}
-          onPress={handleExportCSV}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity style={styles.actionButton} activeOpacity={0.8}>
           <View style={[styles.actionIconWrapper, styles.iconBlue]}>
             <MaterialCommunityIcons
               name="file-chart-outline"

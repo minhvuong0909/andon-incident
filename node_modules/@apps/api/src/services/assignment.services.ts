@@ -84,9 +84,10 @@ export const updateManyAssignmentsByConveyorId = async (
 };
 
 export const getAssignmentsByToday = async () => {
-  const [assignmentRows] = await db.execute<RowDataPacket[]>(
+  const [rows] = await db.execute<RowDataPacket[]>(
     `SELECT * FROM assignment
-     WHERE DATE(created_at) = CURDATE()`,
+     WHERE created_at >= CURDATE()
+     AND created_at < CURDATE() + INTERVAL 1 DAY`,
   );
-  return assignmentRows;
+  return rows;
 };

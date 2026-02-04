@@ -2,13 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="ESP8266 Flasher - Neon Edition"
-        Height="1027" Width="950"
+        Height="784" Width="950"
         MinHeight="650" MinWidth="900"
         WindowStartupLocation="CenterScreen"
         UseLayoutRounding="True"
         SnapsToDevicePixels="True"
         >
-
     <Window.Resources>
 
         <!-- Gradient Brushes -->

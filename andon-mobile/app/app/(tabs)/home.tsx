@@ -10,19 +10,47 @@ import {
   Alert,
 } from "react-native";
 import axios from "axios";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { socket } from "@/services/socket";
+
+const API_URL = "http://192.168.152.189:4000";
 
 export default function HomeScreen() {
   const [conveyors, setConveyors] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // Load user info
+  const loadUserInfo = async () => {
+    try {
+      const name = await AsyncStorage.getItem("userName");
+      if (name) setUserName(name);
+    } catch (error) {
+      console.log("Error loading user info:", error);
+    }
+  };
 
   const fetchConveyors = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/conveyor");
-      setConveyors(res.data.result);
+      const token = await AsyncStorage.getItem("token");
+      const res = await axios.get(`${API_URL}/conveyor`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setConveyors(res.data.result || []);
     } catch (error: any) {
       console.log("API Error:", error.message);
     } finally {
@@ -32,13 +60,12 @@ export default function HomeScreen() {
   };
 
   useEffect(() => {
+    loadUserInfo();
     fetchConveyors();
 
-    // Listen Button Event từ backend
-    socket.on("button:event", (data) => {
+    const listener = (data: any) => {
       console.log("Realtime Button Event:", data);
 
-      // Nếu băng chuyền STOPPED thì báo động ngay
       if (data.status === "stopped") {
         Alert.alert(
           "🚨 SỰ CỐ KHẨN CẤP",
@@ -47,12 +74,13 @@ export default function HomeScreen() {
         );
       }
 
-      // Refresh dashboard ngay
       fetchConveyors();
-    });
+    };
+
+    socket.on("button:event", listener);
 
     return () => {
-      socket.off("button:event");
+      socket.off("button:event", listener);
     };
   }, []);
 
@@ -69,7 +97,7 @@ export default function HomeScreen() {
   ).length;
   const totalCount = conveyors.length;
 
-  // Render status badge (FIX ICON)
+  // Render status badge
   const renderStatusBadge = (status: string) => {
     const statusConfig: any = {
       running: {
@@ -115,6 +143,23 @@ export default function HomeScreen() {
     );
   };
 
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString("vi-VN", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   // Loading UI
   if (loading) {
     return (
@@ -129,15 +174,41 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>TỔNG QUAN HỆ THỐNG</Text>
-        <Text style={styles.headerSubtitle}>Andon Production Monitoring</Text>
+        <View style={styles.headerTop}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.headerTitle}>TỔNG QUAN HỆ THỐNG</Text>
+            <Text style={styles.headerSubtitle}>
+              {userName
+                ? `Xin chào, ${userName}`
+                : "Andon Production Monitoring"}
+            </Text>
+          </View>
+
+          {/* ✅ Realtime Clock */}
+          <View style={styles.clockContainer}>
+            <View style={styles.timeWrapper}>
+              <MaterialCommunityIcons
+                name="clock-outline"
+                size={20}
+                color="#ffa500"
+              />
+              <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
+            </View>
+            <Text style={styles.dateText}>{formatDate(currentTime)}</Text>
+          </View>
+        </View>
       </View>
 
       {/* CONTENT */}
       <ScrollView
         style={styles.content}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#ffa500"]}
+            tintColor="#ffa500"
+          />
         }
       >
         {/* DASHBOARD CARDS */}
@@ -197,7 +268,7 @@ export default function HomeScreen() {
 
         {/* QUICK ACTION */}
         <View style={styles.actionSection}>
-          <Text style={styles.sectionTitle}>THAO TÁC NHANH</Text>
+          <Text style={styles.sectionTitle}>⚡ THAO TÁC NHANH</Text>
 
           <TouchableOpacity style={styles.actionButton} activeOpacity={0.8}>
             <View style={styles.actionIconWrapper}>
@@ -221,7 +292,7 @@ export default function HomeScreen() {
         {/* LIST CONVEYORS */}
         <View style={styles.listSection}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>DANH SÁCH BĂNG CHUYỀN</Text>
+            <Text style={styles.sectionTitle}>🏭 DANH SÁCH BĂNG CHUYỀN</Text>
             <View style={styles.countBadge}>
               <Text style={styles.countText}>{conveyors.length}</Text>
             </View>
@@ -244,10 +315,9 @@ export default function HomeScreen() {
                 activeOpacity={0.7}
               >
                 <View style={styles.deviceHeader}>
-                  {/*  REMOVE deviceInfo */}
-                  <View>
+                  <View style={styles.deviceInfo}>
                     <Text style={styles.deviceName}>{item.name}</Text>
-                    <Text style={styles.deviceId}>ID: {item.id}</Text>
+                    <Text style={styles.deviceId}>#{item.id}</Text>
                   </View>
 
                   {renderStatusBadge(item.status)}
@@ -316,6 +386,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
+  /* HEADER */
   header: {
     backgroundColor: "#1a1a2e",
     paddingTop: 60,
@@ -323,6 +394,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderBottomWidth: 3,
     borderBottomColor: "#ffa500",
+  },
+
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+
+  headerLeft: {
+    flex: 1,
   },
 
   headerTitle: {
@@ -337,6 +418,39 @@ const styles = StyleSheet.create({
     color: "#ffa500",
     marginTop: 5,
     fontWeight: "600",
+  },
+
+  /* ✅ CLOCK STYLES */
+  clockContainer: {
+    alignItems: "flex-end",
+    backgroundColor: "rgba(255, 165, 0, 0.1)",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255, 165, 0, 0.3)",
+  },
+
+  timeWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+
+  timeText: {
+    fontSize: 20,
+    fontWeight: "900",
+    color: "#ffa500",
+    marginLeft: 8,
+    fontVariant: ["tabular-nums"],
+    letterSpacing: 1,
+  },
+
+  dateText: {
+    fontSize: 11,
+    color: "#ffa500",
+    fontWeight: "600",
+    textAlign: "right",
   },
 
   dashboardSection: {
@@ -358,6 +472,10 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
     alignItems: "center",
     elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
   },
 
   cardGreen: { borderLeftWidth: 5, borderLeftColor: "#4caf50" },
@@ -391,6 +509,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     color: "#1a1a2e",
     marginBottom: 15,
+    letterSpacing: 0.5,
   },
 
   actionButton: {
@@ -400,6 +519,10 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: "center",
     elevation: 6,
+    shadowColor: "#ffa500",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
 
   actionIconWrapper: {
@@ -417,6 +540,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "700",
     color: "#1a1a2e",
+    letterSpacing: 0.5,
   },
 
   listSection: {
@@ -427,20 +551,23 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 15,
   },
 
   countBadge: {
     backgroundColor: "#1a1a2e",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 14,
+    minWidth: 40,
+    alignItems: "center",
   },
 
   countText: {
     color: "#ffa500",
     fontSize: 14,
-    fontWeight: "700",
+    fontWeight: "900",
   },
 
   deviceItem: {
@@ -451,11 +578,20 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: "#ffa500",
     elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
   },
 
   deviceHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+
+  deviceInfo: {
+    flex: 1,
   },
 
   deviceName: {
@@ -468,7 +604,7 @@ const styles = StyleSheet.create({
   deviceId: {
     fontSize: 13,
     color: "#999",
-    fontWeight: "500",
+    fontWeight: "600",
   },
 
   statusBadge: {
@@ -482,6 +618,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
     fontWeight: "700",
+    letterSpacing: 0.3,
   },
 
   deviceMeta: {
@@ -502,12 +639,15 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: "center",
     paddingVertical: 60,
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    marginTop: 10,
   },
 
   emptyText: {
     fontSize: 16,
     color: "#999",
-    fontWeight: "600",
+    fontWeight: "700",
     marginTop: 10,
   },
 });
