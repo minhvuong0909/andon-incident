@@ -179,7 +179,7 @@ export function DashboardPage() {
     useState<AndonStationProps | null>(null);
 
   const [technicians, setTechnicians] = useState<Technician[]>([]);
-  const [loadingTechs, setLoadingTechs] = useState(false);
+  const [, setLoadingTechs] = useState(false);
 
   const [readyAssignmentMap, setReadyAssignmentMap] = useState<
     Record<number, number>
