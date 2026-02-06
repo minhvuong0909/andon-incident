@@ -1,11 +1,13 @@
 import { Tabs, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { io, Socket } from "socket.io-client";
 
 export default function TabLayout() {
   const router = useRouter();
 
+  const socketRef = useRef<Socket | null>(null);
   useEffect(() => {
     const protect = async () => {
       const loggedIn = await AsyncStorage.getItem("isLoggedIn");
@@ -17,6 +19,39 @@ export default function TabLayout() {
 
     protect();
   }, []);
+
+  useEffect(() => {
+    const connectSocket = async () => {
+      const loggedIn = await AsyncStorage.getItem("isLoggedIn");
+      if (loggedIn !== "true") return;
+
+      console.log("👉 Start connect socket...");
+
+      socketRef.current = io("http://localhost:4000", {
+        transports: ["websocket"],
+      });
+
+      console.log("👉 socketRef.current =", socketRef.current);
+
+      socketRef.current.on("connect", () => {
+        console.log("✅ CONNECTED ID:", socketRef.current?.id);
+      });
+
+      socketRef.current.on("connect_error", (err) => {
+        console.log("❌ CONNECT ERROR:", err.message);
+      });
+    };
+
+    connectSocket();
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+    };
+  }, []);
+
   return (
     <Tabs
       screenOptions={{

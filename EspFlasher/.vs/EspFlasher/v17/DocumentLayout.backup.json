@@ -144,8 +144,7 @@
               "RelativeToolTip": "EspFlasher\\MainWindow.xaml.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAEMAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-30T01:26:17.61Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-30T01:26:17.61Z"
             },
             {
               "$type": "Document",
@@ -153,8 +152,8 @@
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml",
               "RelativeDocumentMoniker": "EspFlasher\\MainWindow.xaml",
-              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml*",
-              "RelativeToolTip": "EspFlasher\\MainWindow.xaml*",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml",
+              "RelativeToolTip": "EspFlasher\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-01-27T02:04:34.372Z",
               "EditorCaption": ""
@@ -204,8 +203,7 @@
               "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\App.xaml",
               "RelativeToolTip": "EspFlasher\\App.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-01-27T02:49:48.431Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-01-27T02:49:48.431Z"
             },
             {
               "$type": "Document",

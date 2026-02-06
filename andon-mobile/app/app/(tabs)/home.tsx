@@ -13,8 +13,9 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { socket } from "@/services/socket";
+import { API_URL } from "../login";
 
-const API_URL = "http://192.168.152.189:4000";
+// const API_URL = "http://192.168.152.189:4000";
 
 export default function HomeScreen() {
   const [conveyors, setConveyors] = useState<any[]>([]);

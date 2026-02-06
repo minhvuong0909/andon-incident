@@ -445,7 +445,7 @@ export function TechniciansPage() {
                               Xưởng {t.factory_id}
                             </Badge>
                             <Badge className="bg-green-600 text-white text-xs font-semibold">
-                              Active
+                              Hoạt động
                             </Badge>
                           </div>
                         </div>

@@ -14,7 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 // export const API_URL = "http://localhost:4000"; // local
-export const API_URL = "http://192.168.152.189:4000"; // network
+export const API_URL = "http://192.168.1.8:4000"; // network
 export default function LoginScreen() {
   const router = useRouter();
   const [username, setUsername] = useState("");

@@ -31,12 +31,11 @@ export function Layout() {
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [activeIncidents, setActiveIncidents] = useState(0);
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [, setUserMenuOpen] = useState(false);
   const [notifMenuOpen, setNotifMenuOpen] = useState(false);
 
   const displayName = localStorage.getItem("displayName") || "User";
   const userRoleRaw = localStorage.getItem("userRole") || "user";
-  const username = localStorage.getItem("username") || "user";
 
   const formatRole = (role: string) => {
     switch (role) {
