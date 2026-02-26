@@ -3,20 +3,56 @@
   "WorkspaceRootPath": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\createconveyor.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\createconveyor.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\createconveyor.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\createconveyor.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\createconveyor.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\createconveyor.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\entities\\conveyor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\entities\\conveyor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\services\\factoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\services\\factoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\entities\\factory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\entities\\factory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\entities\\assignment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\entities\\assignment.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\espflasher.csproj.backup.tmp||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\espflasher.csproj.backup.tmp||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6FB984EF-4BDF-4D47-A493-D0EE3F51A017}|Program\\Program.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\program\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6FB984EF-4BDF-4D47-A493-D0EE3F51A017}|Program\\Program.csproj|solutionrelative:program\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\entities\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\entities\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\entities\\andondbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\entities\\andondbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\assemblyinfo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -27,10 +63,6 @@
       "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\espflasher.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6FB984EF-4BDF-4D47-A493-D0EE3F51A017}|Program\\Program.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\program\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6FB984EF-4BDF-4D47-A493-D0EE3F51A017}|Program\\Program.csproj|solutionrelative:program\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
@@ -39,16 +71,8 @@
       "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\appconfig.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\services\\factoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\services\\factoryservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\entities\\andondbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\entities\\andondbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -64,10 +88,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\repos\\factoryrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\repos\\factoryrepo.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|d:\\back_end\\k19-mern\\allofproject-js\\andon-monorepo\\espflasher\\espflasher\\entities\\factory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{6C53981C-8966-4116-93CE-4CCF043B3C4C}|EspFlasher\\EspFlasher.csproj|solutionrelative:espflasher\\entities\\factory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -77,7 +97,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 7,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -89,78 +109,162 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "FactoryService.cs",
-              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Services\\FactoryService.cs",
-              "RelativeDocumentMoniker": "EspFlasher\\Services\\FactoryService.cs",
-              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Services\\FactoryService.cs",
-              "RelativeToolTip": "EspFlasher\\Services\\FactoryService.cs",
-              "ViewState": "AgIAABoAAAAAAAAAAAAQwB0AAABJAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "Conveyor.cs",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\Conveyor.cs",
+              "RelativeDocumentMoniker": "EspFlasher\\Entities\\Conveyor.cs",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\Conveyor.cs",
+              "RelativeToolTip": "EspFlasher\\Entities\\Conveyor.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAA3wA8AAAAvAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-29T04:05:31.017Z"
+              "WhenOpened": "2026-02-26T03:24:19.026Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\Program\\Program.cs",
-              "RelativeDocumentMoniker": "Program\\Program.cs",
-              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\Program\\Program.cs",
-              "RelativeToolTip": "Program\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAkwA4AAAAAAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "CreateConveyor.xaml.cs",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\CreateConveyor.xaml.cs",
+              "RelativeDocumentMoniker": "EspFlasher\\CreateConveyor.xaml.cs",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\CreateConveyor.xaml.cs",
+              "RelativeToolTip": "EspFlasher\\CreateConveyor.xaml.cs",
+              "ViewState": "AgIAAC4AAAAAAAAAAAAswEMAAAA1AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-30T16:07:11.546Z"
+              "WhenOpened": "2026-01-30T01:27:59.226Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "EspFlasher.csproj",
-              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\EspFlasher.csproj",
-              "RelativeDocumentMoniker": "EspFlasher\\EspFlasher.csproj",
-              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\EspFlasher.csproj",
-              "RelativeToolTip": "EspFlasher\\EspFlasher.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBMAAABTAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-01-28T05:50:17.909Z"
+              "Title": "Factory.cs",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\Factory.cs",
+              "RelativeDocumentMoniker": "EspFlasher\\Entities\\Factory.cs",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\Factory.cs",
+              "RelativeToolTip": "EspFlasher\\Entities\\Factory.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-30T01:17:26.843Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 3,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "EspFlasher\\MainWindow.xaml.cs",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml.cs",
+              "RelativeToolTip": "EspFlasher\\MainWindow.xaml.cs",
+              "ViewState": "AgIAADIBAAAAAAAAAAAswEsAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-30T01:26:17.61Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
               "Title": "CreateConveyor.xaml",
               "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\CreateConveyor.xaml",
               "RelativeDocumentMoniker": "EspFlasher\\CreateConveyor.xaml",
               "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\CreateConveyor.xaml",
               "RelativeToolTip": "EspFlasher\\CreateConveyor.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-01-30T01:28:11.926Z"
+              "WhenOpened": "2026-01-30T01:28:11.926Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml.cs",
-              "RelativeDocumentMoniker": "EspFlasher\\MainWindow.xaml.cs",
-              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml.cs",
-              "RelativeToolTip": "EspFlasher\\MainWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEMAAAAjAAAAAAAAAA==",
+              "DocumentIndex": 10,
+              "Title": "User.cs",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "EspFlasher\\Entities\\User.cs",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\User.cs",
+              "RelativeToolTip": "EspFlasher\\Entities\\User.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAA/wAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-30T01:26:17.61Z"
+              "WhenOpened": "2026-02-26T03:24:30.815Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "EspFlasher\\MainWindow.xaml",
-              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml",
-              "RelativeToolTip": "EspFlasher\\MainWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-01-27T02:04:34.372Z",
+              "DocumentIndex": 4,
+              "Title": "FactoryService.cs",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Services\\FactoryService.cs",
+              "RelativeDocumentMoniker": "EspFlasher\\Services\\FactoryService.cs",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Services\\FactoryService.cs",
+              "RelativeToolTip": "EspFlasher\\Services\\FactoryService.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAUwB0AAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-29T04:05:31.017Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Assignment.cs",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\Assignment.cs",
+              "RelativeDocumentMoniker": "EspFlasher\\Entities\\Assignment.cs",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\Assignment.cs",
+              "RelativeToolTip": "EspFlasher\\Entities\\Assignment.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAA3wAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T03:24:10.497Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Notification.cs",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\Notification.cs",
+              "RelativeDocumentMoniker": "EspFlasher\\Entities\\Notification.cs",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\Notification.cs",
+              "RelativeToolTip": "EspFlasher\\Entities\\Notification.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T03:24:28.195Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 7,
+              "Title": "EspFlasher.csproj.Backup.tmp",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\EspFlasher.csproj.Backup.tmp",
+              "RelativeDocumentMoniker": "EspFlasher\\EspFlasher.csproj.Backup.tmp",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\EspFlasher.csproj.Backup.tmp",
+              "RelativeToolTip": "EspFlasher\\EspFlasher.csproj.Backup.tmp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-02-26T04:15:32.248Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\Program\\Program.cs",
+              "RelativeDocumentMoniker": "Program\\Program.cs",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\Program\\Program.cs",
+              "RelativeToolTip": "Program\\Program.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAwA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-30T16:07:11.546Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AndonDbContext.cs",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\AndonDbContext.cs",
+              "RelativeDocumentMoniker": "EspFlasher\\Entities\\AndonDbContext.cs",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\AndonDbContext.cs",
+              "RelativeToolTip": "EspFlasher\\Entities\\AndonDbContext.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAB4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-30T16:55:03.118Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\appsettings.json",
               "RelativeDocumentMoniker": "EspFlasher\\appsettings.json",
@@ -172,7 +276,31 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 12,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "EspFlasher\\MainWindow.xaml",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\MainWindow.xaml",
+              "RelativeToolTip": "EspFlasher\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-01-27T02:04:34.372Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "EspFlasher.csproj",
+              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\EspFlasher.csproj",
+              "RelativeDocumentMoniker": "EspFlasher\\EspFlasher.csproj",
+              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\EspFlasher.csproj",
+              "RelativeToolTip": "EspFlasher\\EspFlasher.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwBMAAABTAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-01-28T05:50:17.909Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
               "Title": "AssemblyInfo.cs",
               "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\AssemblyInfo.cs",
               "RelativeDocumentMoniker": "EspFlasher\\AssemblyInfo.cs",
@@ -184,30 +312,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "CreateConveyor.xaml.cs",
-              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\CreateConveyor.xaml.cs",
-              "RelativeDocumentMoniker": "EspFlasher\\CreateConveyor.xaml.cs",
-              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\CreateConveyor.xaml.cs",
-              "RelativeToolTip": "EspFlasher\\CreateConveyor.xaml.cs",
-              "ViewState": "AgIAAD8AAAAAAAAAAAA6wEgAAABDAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-30T01:27:59.226Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 17,
               "Title": "App.xaml",
               "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\App.xaml",
               "RelativeDocumentMoniker": "EspFlasher\\App.xaml",
               "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\App.xaml",
               "RelativeToolTip": "EspFlasher\\App.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-01-27T02:49:48.431Z"
+              "WhenOpened": "2026-01-27T02:49:48.431Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 20,
               "Title": "CreateConveyorRequest.cs",
               "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Dtos\\CreateConveyorRequest.cs",
               "RelativeDocumentMoniker": "EspFlasher\\Dtos\\CreateConveyorRequest.cs",
@@ -219,19 +336,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "AndonDbContext.cs",
-              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\AndonDbContext.cs",
-              "RelativeDocumentMoniker": "EspFlasher\\Entities\\AndonDbContext.cs",
-              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\AndonDbContext.cs",
-              "RelativeToolTip": "EspFlasher\\Entities\\AndonDbContext.cs",
-              "ViewState": "AgIAAEoAAAAAAAAAAAAYwBoAAAAyAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-30T16:55:03.118Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 16,
               "Title": "AppConfig.cs",
               "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\AppConfig.cs",
               "RelativeDocumentMoniker": "EspFlasher\\AppConfig.cs",
@@ -243,7 +348,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 19,
               "Title": "App.cs",
               "DocumentMoniker": "C:\\Users\\ACER\\AppData\\Local\\Temp\\.vsdbgsrc\\a8a3b41cecf52e7d0db0b24bde6b00e35cc0b2455d51676271b06b7d5f3fb8fa\\App.cs",
               "ToolTip": "C:\\Users\\ACER\\AppData\\Local\\Temp\\.vsdbgsrc\\a8a3b41cecf52e7d0db0b24bde6b00e35cc0b2455d51676271b06b7d5f3fb8fa\\App.cs [Read Only]",
@@ -254,7 +359,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 21,
               "Title": "FactoryRepo.cs",
               "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Repos\\FactoryRepo.cs",
               "RelativeDocumentMoniker": "EspFlasher\\Repos\\FactoryRepo.cs",
@@ -266,7 +371,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 18,
               "Title": "App.xaml.cs",
               "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\App.xaml.cs",
               "RelativeDocumentMoniker": "EspFlasher\\App.xaml.cs",
@@ -275,18 +380,6 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-30T01:18:55.715Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "Factory.cs",
-              "DocumentMoniker": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\Factory.cs",
-              "RelativeDocumentMoniker": "EspFlasher\\Entities\\Factory.cs",
-              "ToolTip": "D:\\back_end\\K19-MERN\\allOfProject-js\\andon-monorepo\\EspFlasher\\EspFlasher\\Entities\\Factory.cs",
-              "RelativeToolTip": "EspFlasher\\Entities\\Factory.cs",
-              "ViewState": "AgIAAAUAAAAAAAAAAAA8wBEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-30T01:17:26.843Z"
             }
           ]
         }

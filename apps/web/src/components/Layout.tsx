@@ -13,6 +13,7 @@ import { Button } from "./ui/button";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { cn } from "./ui/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { API_URL } from "../App";
 
 type NotificationItem = {
   id: number;
@@ -141,7 +142,7 @@ export function Layout() {
         return;
       }
 
-      const res = await fetch(`http://localhost:4000/users/${userId}`, {
+      const res = await fetch(`${API_URL}/users/${userId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

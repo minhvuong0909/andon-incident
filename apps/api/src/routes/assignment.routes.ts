@@ -4,6 +4,7 @@ import {
   getAllAssignmentsController,
   getAssignmentByIdController,
   getAssignmentsByTodayController,
+  getAssignmentsByUserIdController,
   updateAssignmentController,
   updateManyAssignmentsByConveyorIdController,
 } from "../controllers/assignment.controllers";
@@ -30,4 +31,7 @@ assignmentRoutes.put(
 
 // get assignment by today
 assignmentRoutes.get("/today", getAssignmentsByTodayController);
+
+// get assignment by user id
+assignmentRoutes.get("/user/:id", getAssignmentsByUserIdController);
 export default assignmentRoutes;

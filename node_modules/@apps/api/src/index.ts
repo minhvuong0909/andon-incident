@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import cors from "cors";
 import express from "express";
 import IotRouter from "./routes/iot.routes";
@@ -9,6 +10,7 @@ import andonRoutes from "./routes/andon.routes";
 import userRoutes from "./routes/user.routes";
 import assignmentRoutes from "./routes/assignment.routes";
 import notificationRoute from "./routes/notification.routes";
+dotenv.config();
 
 const app = express();
 
@@ -38,5 +40,7 @@ testDB();
 
 const PORT = Number(process.env.PORT ?? 4000);
 app.listen(PORT, () => {
+  console.log(process.env.DATABASE_URL);
+
   console.log(`API running at http://localhost:${PORT}`);
 });

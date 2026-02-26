@@ -14,7 +14,7 @@ export async function testDB() {
     const connection = await db.getConnection();
     const [rows] = await connection.query("SELECT DATABASE() as db");
     console.log(rows);
-    
+
     console.log("Connected to MySQL!");
     // await connection.end();
   } catch (err) {

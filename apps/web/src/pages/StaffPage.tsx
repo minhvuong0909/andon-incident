@@ -3,6 +3,7 @@ import { Users } from "lucide-react";
 import { Card } from "../components/ui/card";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
+import { API_URL } from "../App";
 
 type StaffUser = {
   id: number;
@@ -30,7 +31,7 @@ export function StaffManagementPage() {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:4000/users");
+      const res = await fetch(`${API_URL}/users`);
       const data: ApiResponse = await res.json();
 
       const list = data.result || data.users || [];

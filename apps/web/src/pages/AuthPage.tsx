@@ -6,6 +6,7 @@ import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { Alert, AlertDescription } from "../components/ui/alert";
 import { Button } from "../components/ui/button";
+import { API_URL } from "../App";
 
 type LoginResponse = {
   message: string;
@@ -39,7 +40,7 @@ export function LoginPage() {
     setIsLoading(true);
 
     try {
-      const res = await fetch("http://localhost:4000/users/login", {
+      const res = await fetch(`${API_URL}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

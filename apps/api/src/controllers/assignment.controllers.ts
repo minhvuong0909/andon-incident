@@ -3,6 +3,7 @@ import {
   createAssignment,
   getAssignmentById,
   getAssignmentsByToday,
+  getAssignmentsByUserId,
   updateAssignment,
   updateManyAssignmentsByConveyorId,
 } from "../services/assignment.services";
@@ -87,5 +88,20 @@ export const getAssignmentsByTodayController = async (
     res
       .status(400)
       .json({ message: "Error fetching today's assignments", error });
+  }
+};
+
+export const getAssignmentsByUserIdController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const userId = req.params.id as unknown as number;
+    const result = await getAssignmentsByUserId(userId);
+    res.status(200).json({ assignments: result });
+  } catch (error) {
+    res
+      .status(400)
+      .json({ message: "Error fetching user's assignments", error });
   }
 };

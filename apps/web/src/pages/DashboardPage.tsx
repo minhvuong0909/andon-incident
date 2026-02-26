@@ -36,6 +36,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "../components/ui/tabs";
+import { API_URL } from "../App";
 
 type ConveyorStatus = "running" | "stopped";
 
@@ -83,17 +84,15 @@ const dailyIncidentsData = [
   { time: "20:00", count: 3 },
 ];
 
-const API_BASE = "http://localhost:4000";
-
 async function fetchConveyorsApi() {
-  const res = await fetch(`${API_BASE}/conveyor`, { cache: "no-store" });
+  const res = await fetch(`${API_URL}/conveyor`, { cache: "no-store" });
   if (!res.ok) throw new Error("Fetch conveyors failed");
   const json: ApiResponse<ConveyorApi> = await res.json();
   return json.result || [];
 }
 
 async function fetchConveyorsByFactoryApi(factoryId: number) {
-  const res = await fetch(`${API_BASE}/conveyor/factory/${factoryId}`, {
+  const res = await fetch(`${API_URL}/conveyor/factory/${factoryId}`, {
     cache: "no-store",
   });
 
@@ -103,7 +102,7 @@ async function fetchConveyorsByFactoryApi(factoryId: number) {
 }
 
 async function fetchFixersApi() {
-  const res = await fetch(`${API_BASE}/users`, { cache: "no-store" });
+  const res = await fetch(`${API_URL}/users`, { cache: "no-store" });
   if (!res.ok) throw new Error("Fetch users failed");
 
   const json: ApiResponse<Technician> = await res.json();
@@ -118,7 +117,7 @@ async function fetchFixersApi() {
 }
 
 async function fetchAllAssignmentsApi() {
-  const res = await fetch(`${API_BASE}/assignment`, { cache: "no-store" });
+  const res = await fetch(`${API_URL}/assignment`, { cache: "no-store" });
   if (!res.ok) throw new Error("Fetch assignments failed");
 
   const json: ApiResponse<AssignmentApi> = await res.json();
@@ -264,7 +263,7 @@ export function DashboardPage() {
     return latestConveyors.map((c) => ({
       id: String(c.id),
       name: c.name,
-      area: `Xưởng ${c.factory_id}`,
+      area: `${c.factory_id}`,
       lastUpdate: new Date(c.created_at).toLocaleString("vi-VN"),
       lastUpdateISO: c.created_at,
       status: c.status === "running" ? "running" : "stopped",
@@ -403,7 +402,7 @@ export function DashboardPage() {
           };
 
           const res = await fetch(
-            `${API_BASE}/assignment/update/${assignmentId}`,
+            `${API_URL}/assignment/update/${assignmentId}`,
             {
               method: "PUT",
               headers: { "Content-Type": "application/json" },

@@ -63,7 +63,6 @@ namespace EspFlasher
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //    FillComboBox();
             FactoryComboBox.ItemsSource = _conveyorService.GetAllFactories();
             FactoryComboBox.DisplayMemberPath = "Name";
             FactoryComboBox.SelectedValuePath = "Id";

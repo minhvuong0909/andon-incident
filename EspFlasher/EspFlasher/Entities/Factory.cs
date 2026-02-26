@@ -14,4 +14,9 @@ public partial class Factory
     public virtual ICollection<Conveyor> Conveyors { get; set; } = new List<Conveyor>();
 
     public virtual ICollection<User> Users { get; set; } = new List<User>();
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

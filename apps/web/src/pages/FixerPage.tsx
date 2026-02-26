@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import { API_URL } from "../App";
 
 type UserRole = "Staff" | "Admin" | "Fixer";
 type UserStatus = "Active" | "Inactive";
@@ -113,8 +114,8 @@ export function TechniciansPage() {
 
       try {
         const [userRes, assignmentRes] = await Promise.all([
-          fetch("http://localhost:4000/users", { cache: "no-store" }),
-          fetch("http://localhost:4000/assignment", { cache: "no-store" }),
+          fetch(`${API_URL}/users`, { cache: "no-store" }),
+          fetch(`${API_URL}/assignment`, { cache: "no-store" }),
         ]);
 
         if (!userRes.ok) throw new Error("Fetch users failed");

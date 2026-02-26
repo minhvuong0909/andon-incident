@@ -91,3 +91,11 @@ export const getAssignmentsByToday = async () => {
   );
   return rows;
 };
+
+export const getAssignmentsByUserId = async (user_id: number) => {
+  const [rows] = await db.execute<RowDataPacket[]>(
+    `SELECT * FROM assignment WHERE user_id = ?`,
+    [user_id],
+  );
+  return rows;
+};

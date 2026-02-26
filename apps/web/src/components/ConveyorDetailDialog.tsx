@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card } from "./ui/card";
+import { API_URL } from "../App";
 
 type ConveyorStatus = "running" | "stopped";
 
@@ -33,7 +34,7 @@ export function ConveyorDetailDialog({
     const fetchDetail = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:4000/conveyor/${conveyorId}`);
+        const res = await fetch(`${API_URL}/conveyor/${conveyorId}`);
         if (!res.ok) throw new Error("Fetch detail failed");
 
         const json: ApiResponse = await res.json();

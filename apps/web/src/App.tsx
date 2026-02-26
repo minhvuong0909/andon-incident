@@ -7,6 +7,8 @@ import { StaffManagementPage } from "./pages/StaffPage";
 import { DashboardPage } from "./pages/DashboardPage";
 import { Layout } from "./components/Layout";
 
+// export const API_URL = "https://andon-incident.onrender.com"; // production
+export const API_URL = "http://localhost:4000"; // local
 export default function App() {
   return (
     <BrowserRouter>

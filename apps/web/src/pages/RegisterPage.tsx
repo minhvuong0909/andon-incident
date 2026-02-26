@@ -15,6 +15,7 @@ import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
 import { Alert, AlertDescription } from "../components/ui/alert";
+import { API_URL } from "../App";
 
 type RegisterPayload = {
   factory_id: number;
@@ -56,7 +57,7 @@ export function RegisterUserPage() {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:4000/users/register", {
+      const res = await fetch(`${API_URL}/users/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

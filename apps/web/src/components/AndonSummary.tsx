@@ -6,6 +6,7 @@ import {
   Activity,
 } from "lucide-react";
 import { Card } from "./ui/card";
+import { API_URL } from "../App";
 
 type ConveyorApi = {
   id: number;
@@ -100,7 +101,7 @@ export function AndonSummary() {
   useEffect(() => {
     const fetchConveyors = async () => {
       try {
-        const res = await fetch("http://localhost:4000/conveyor");
+        const res = await fetch(`${API_URL}/conveyor`);
         if (!res.ok) throw new Error("Fetch conveyor failed");
 
         const json: ApiResponse = await res.json();

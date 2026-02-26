@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertCircle, Clock } from "lucide-react";
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
+import { API_URL } from "../App";
 
 type ConveyorStatus = "running" | "stopped";
 
@@ -25,7 +26,7 @@ export function IncidentList() {
   useEffect(() => {
     const fetchIncidents = async () => {
       try {
-        const res = await fetch("http://localhost:4000/conveyor");
+        const res = await fetch(`${API_URL}/conveyor`);
         if (!res.ok) throw new Error("Fetch incidents failed");
 
         const json: ApiResponse = await res.json();
