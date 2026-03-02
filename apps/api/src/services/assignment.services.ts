@@ -5,7 +5,7 @@ import { db } from "./db";
 
 export const createAssignment = async (user_id: number) => {
   const [userRows] = await db.execute<RowDataPacket[]>(
-    "SELECT id, name, status, role FROM user WHERE id = ? AND status = 'Active' AND role = 'Fixer'",
+    "SELECT id, name, status, role FROM user WHERE id = ? AND status = 'active' AND role = 'fixer'",
     [user_id],
   );
 
@@ -17,7 +17,7 @@ export const createAssignment = async (user_id: number) => {
   }
   // insert assignment
   return await db.execute(
-    "INSERT INTO assignment (user_id, status) VALUES (?, 'Ready')",
+    "INSERT INTO assignment (user_id, status) VALUES (?, 'ready')",
     [user_id],
   );
 };

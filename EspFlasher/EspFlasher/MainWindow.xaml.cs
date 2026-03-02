@@ -210,7 +210,8 @@ namespace EspFlasher
                 ProcessStartInfo psi = new ProcessStartInfo
                 {
                     FileName = "esptool.exe",
-                    Arguments = $"--port {com} --baud 115200 write_flash 0x00000 \"{firmwareBin}\"",
+                    //Arguments = $"--port {com} --baud 921600 write_flash 0x00000 \"{firmwareBin}\"",
+                    Arguments = $"--port {com} --baud 115200 write_flash -z 0x0 \"{firmwareBin}\"",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -265,7 +266,8 @@ namespace EspFlasher
         {
             try
             {
-                ProcessStartInfo psi = new ProcessStartInfo
+                // First detect chip type
+                ProcessStartInfo detectPsi = new ProcessStartInfo
                 {
                     FileName = "esptool.exe",
                     Arguments = $"--port {com} chip_id",
@@ -275,22 +277,25 @@ namespace EspFlasher
                     CreateNoWindow = true
                 };
 
-                using (Process p = Process.Start(psi))
+                string detectOutput;
+
+                using (Process p = Process.Start(detectPsi))
                 {
-                    string output = p.StandardOutput.ReadToEnd();
+                    detectOutput = p.StandardOutput.ReadToEnd();
                     p.WaitForExit();
+                }
 
-                    foreach (string line in output.Split('\n'))
-                    {
-                        if (line.Contains("Chip ID"))
-                        {
-                            string hex = line.Split(':')[1].Trim();
-                            hex = hex.Replace("0x", "");
-
-                            uint chipIdDecimal = Convert.ToUInt32(hex, 16);
-                            return "esp8266_" + chipIdDecimal;
-                        }
-                    }
+                if (detectOutput.Contains("ESP8266"))
+                {
+                    return GetEsp8266Id(detectOutput);
+                }
+                else if (detectOutput.Contains("ESP32"))
+                {
+                    return GetEsp32Mac(com);
+                }
+                else
+                {
+                    Log($"[{com}] Unknown chip type");
                 }
             }
             catch (Exception ex)
@@ -300,7 +305,62 @@ namespace EspFlasher
 
             return null;
         }
+        private string GetEsp8266Id(string output)
+        {
+            foreach (string line in output.Split('\n'))
+            {
+                if (line.Contains("Chip ID"))
+                {
+                    string hex = line.Split(':')[1].Trim().Replace("0x", "");
+                    uint chipIdDecimal = Convert.ToUInt32(hex, 16);
+                    return "esp8266_" + chipIdDecimal;
+                }
+            }
+            return null;
+        }
 
+        private string GetEsp32Mac(string com)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "esptool.exe",
+                Arguments = $"--port {com} read_mac",
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                CreateNoWindow = true
+            };
+
+            using (Process p = Process.Start(psi))
+            {
+                string output = p.StandardOutput.ReadToEnd();
+                p.WaitForExit();
+
+                foreach (string line in output.Split('\n'))
+                {
+                    if (line.Contains("MAC:"))
+                    {
+                        string mac = line.Substring(line.IndexOf("MAC:") + 4).Trim();
+                        mac = mac.Replace(":", "").ToLower();
+
+                        if (mac.Length == 12)
+                        {
+                            mac =
+                                mac.Substring(10, 2) +
+                                mac.Substring(8, 2) +
+                                mac.Substring(6, 2) +
+                                mac.Substring(4, 2) +
+                                mac.Substring(2, 2) +
+                                mac.Substring(0, 2);
+                        }
+
+                        return "esp32_" + mac;
+                    }
+                }
+            }
+
+            return null;
+        }
         // ============================
         // ✅ AES Decrypt ENC → BIN (Fixed with better error handling)
         // ============================
@@ -394,3 +454,4 @@ namespace EspFlasher
         }
     }
 }
+

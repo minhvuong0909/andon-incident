@@ -15,11 +15,13 @@ export const sendNotifyController = async (req: Request, res: Response) => {
   }
 };
 
-
-export const getNotificationsController = async (req: Request, res: Response) => {
+export const getNotificationsController = async (
+  req: Request,
+  res: Response,
+) => {
   // Placeholder implementation
   try {
-    const [notifications] = (await db.execute("SELECT * FROM notification"));
+    const [notifications] = await db.execute("SELECT * FROM notification");
     return res.status(200).json({ ok: true, notifications });
   } catch (error) {
     return res

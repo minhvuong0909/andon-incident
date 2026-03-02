@@ -46,6 +46,7 @@ type ConveyorApi = {
   name: string;
   status: ConveyorStatus;
   created_at: string;
+  updated_at?: string;
 };
 
 type ApiResponse<T> = {
@@ -74,15 +75,6 @@ type AssignmentApi = {
   status: AssignmentStatus;
   created_at?: string;
 };
-
-const dailyIncidentsData = [
-  { time: "00:00", count: 2 },
-  { time: "04:00", count: 1 },
-  { time: "08:00", count: 5 },
-  { time: "12:00", count: 8 },
-  { time: "16:00", count: 4 },
-  { time: "20:00", count: 3 },
-];
 
 async function fetchConveyorsApi() {
   const res = await fetch(`${API_URL}/conveyor`, { cache: "no-store" });
@@ -264,8 +256,10 @@ export function DashboardPage() {
       id: String(c.id),
       name: c.name,
       area: `${c.factory_id}`,
-      lastUpdate: new Date(c.created_at).toLocaleString("vi-VN"),
-      lastUpdateISO: c.created_at,
+      lastUpdate: new Date(c.updated_at || c.created_at).toLocaleString(
+        "vi-VN",
+      ),
+      lastUpdateISO: c.updated_at || c.created_at,
       status: c.status === "running" ? "running" : "stopped",
       issue:
         c.status === "stopped"
@@ -274,6 +268,41 @@ export function DashboardPage() {
     }));
   }, [latestConveyors]);
 
+  function buildDailyIncidentsFromStations(stations: StationWithISO[]) {
+    const now = Date.now();
+    const from = now - 24 * 60 * 60 * 1000;
+
+    // 6 buckets mỗi 4 giờ
+    const buckets = [
+      { time: "00:00", start: 0, end: 4 },
+      { time: "04:00", start: 4, end: 8 },
+      { time: "08:00", start: 8, end: 12 },
+      { time: "12:00", start: 12, end: 16 },
+      { time: "16:00", start: 16, end: 20 },
+      { time: "20:00", start: 20, end: 24 },
+    ];
+
+    const result = buckets.map((b) => ({ time: b.time, count: 0 }));
+
+    // lấy các “event” stopped trong 24h
+    const events = stations
+      .filter((s) => s.status === "stopped")
+      .map((s) => new Date(String(s.lastUpdateISO || "")).getTime())
+      .filter((t) => !Number.isNaN(t) && t >= from && t <= now);
+
+    for (const t of events) {
+      const d = new Date(t);
+      const hour = d.getHours(); // local time
+      const idx = Math.min(5, Math.floor(hour / 4));
+      result[idx].count += 1;
+    }
+
+    return result;
+  }
+
+  const dailyIncidents = useMemo(() => {
+    return buildDailyIncidentsFromStations(stations);
+  }, [stations]);
   const filteredStations = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) return stations;
@@ -813,7 +842,7 @@ export function DashboardPage() {
                   </h2>
                 </div>
                 <AndonStats
-                  dailyIncidents={dailyIncidentsData}
+                  dailyIncidents={dailyIncidents}
                   statusDistribution={statusDistribution}
                 />
               </div>

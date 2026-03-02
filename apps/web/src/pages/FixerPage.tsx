@@ -36,9 +36,9 @@ import {
 } from "../components/ui/select";
 import { API_URL } from "../App";
 
-type UserRole = "Staff" | "Admin" | "Fixer";
-type UserStatus = "Active" | "Inactive";
-type AssignmentStatus = "Assigned" | "Done";
+type UserRole = "staff" | "admin" | "fixer";
+type UserStatus = "active" | "inactive";
+type AssignmentStatus = "assigned" | "done";
 
 export interface User {
   id: number;
@@ -157,7 +157,7 @@ export function TechniciansPage() {
   }, []);
 
   const technicians = useMemo(() => {
-    return users.filter((u) => u.role === "Fixer" && u.status === "Active");
+    return users.filter((u) => u.role === "fixer" && u.status === "active");
   }, [users]);
 
   const filteredTechnicians = useMemo(() => {
@@ -177,7 +177,7 @@ export function TechniciansPage() {
   }, [technicians, search, factoryFilter]);
 
   const activeAssignments = useMemo(() => {
-    return assignments.filter((a) => a.status === "Assigned");
+    return assignments.filter((a) => a.status === "assigned");
   }, [assignments]);
 
   const getConveyorById = async (id: number) => {
